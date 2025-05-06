@@ -1,0 +1,157 @@
+import sqlite3
+
+
+conn = sqlite3.connect('C:\guilherme\projeto_rpg\personagem.db')
+cursor = conn.cursor()
+
+cursor.execute(
+    '''
+CREATE TABLE IF NOT EXISTS Personagem(
+    id_personagem INTEGER PRIMARY KEY AUTOINCREMENT,
+    nome_personagem TEXT NOT NULL,
+    genero TEXT NOT NULL,
+    cor_pele TEXT NOT NULL,
+    cor_cabelo TEXT NOT NULL,
+    cor_olho TEXT NOT NULL
+    )
+'''
+)
+
+cursor.execute(
+    '''
+CREATE TABLE IF NOT EXISTS Usuario(
+    id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_personagem INTEGER,
+    nome_usuario TEXT UNIQUE NOT NULL,
+    email TEXT UNIQUE NOT NULL,
+    senha TEXT NOT NULL,
+    FOREIGN KEY (id_personagem) REFERENCES Personagem(id_personagem)
+    )
+'''
+)
+
+cursor.execute(
+    '''
+CREATE TABLE IF NOT EXISTS CapacidadeInvent(
+    id_personagem INTEGER PRIMARY KEY,
+    capacidade REAL DEFAULT 100,
+    peso_atual REAL,
+    FOREIGN KEY (id_personagem) REFERENCES Personagem(id_personagem)
+    )
+'''
+)
+
+cursor.execute(
+    '''
+CREATE TABLE IF NOT EXISTS Classe(
+    id_classe INTEGER PRIMARY KEY AUTOINCREMENT,
+    id_personagem INTEGER,
+    nome_classe TEXT,
+    FOREIGN KEY (id_personagem) REFERENCES Personagem(id_personagem)
+    )
+'''
+)
+
+cursor.execute(
+    '''
+CREATE TABLE IF NOT EXISTS AtributoClasse(
+    id_classe INTEGER PRIMARY KEY,
+    vitalidade INTEGER,
+    forca INTEGER,
+    agilidade INTEGER,
+    inteligencia INTEGER,
+    sorte INTEGER,
+    FOREIGN KEY (id_classe) REFERENCES Classe(id_classe)
+    )
+'''
+)
+
+cursor.execute(
+    '''
+CREATE TABLE IF NOT EXISTS PersonagemItem(
+    id_item INTEGER,
+    id_personagem INTEGER,
+    quantidade INTEGER,
+    PRIMARY KEY (id_item, id_personagem),
+    FOREIGN KEY (id_item) REFERENCES Item(id_item),
+    FOREIGN KEY (id_personagem) REFERENCES Personagem(id_personagem)
+    )
+'''
+)
+
+cursor.execute(
+    '''
+CREATE TABLE IF NOT EXISTS Item(
+    id_item INTEGER PRIMARY KEY AUTOINCREMENT,
+    item_nome TEXT,
+    item_tipo TEXT
+    )
+'''
+)
+
+cursor.execute(
+    '''
+CREATE TABLE IF NOT EXISTS AtributoArma(
+    id_item INTEGER PRIMARY KEY,
+    dano INTEGER,
+    chance_ataque INTEGER,
+    chance_critico INTEGER,
+    peso_arma REAL,
+    categoria_arma TEXT,
+    FOREIGN KEY (id_item) REFERENCES Item(id_item)
+    )
+'''
+)
+
+cursor.execute(
+    '''
+CREATE TABLE IF NOT EXISTS AtributoArmadura(
+    id_item INTEGER PRIMARY KEY,
+    defesa INTEGER,
+    esquiva INTEGER,
+    peso_armadura REAL,
+    categoria_armadura TEXT,
+    FOREIGN KEY (id_item) REFERENCES Item(id_item)
+    )
+'''
+)
+
+cursor.execute(
+    '''
+INSERT INTO Classe (nome_classe) VALUES
+('Guerreiro'),
+('Paladino'),
+('Ladino'),
+('Caçador'),
+('Mago'),
+('Clérigo')
+'''
+)
+
+cursor.execute(
+    '''
+INSERT INTO AtributoClasse (id_classe, vitalidade, forca, agilidade, inteligencia, sorte) VALUES
+('1', 11, 12, 9, 8, 10),
+('2', 12, 10, 8, 9, 11),
+('3', 9, 10, 12, 8, 11),
+('4', 9, 8, 11, 12, 10 ),
+('5', 9, 10, 11, 8, 12),
+('6', 9, 8, 10, 12, 11)
+'''
+)
+
+cursor.execute(
+    '''
+INSERT INTO Classe (nome_classe) VALUES
+('Guerreiro'),
+('Paladino'),
+('Ladino'),
+('Caçador'),
+('Mago'),
+('Clérigo')
+'''
+)
+
+
+conn.commit()
+conn.close()

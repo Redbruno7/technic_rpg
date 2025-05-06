@@ -1,0 +1,76 @@
+Criação de Menus e Formularios
+
+Menu Acesso/Cadastro #
+Menu Usuario - Criar , Selecionar , Alterar , Remover , Opções , Sair
+Menu Opções da Conta -  Alterar dados , Deletar conta
+Menu de seleção de personagem
+
+Formulario registro # criar tabela db usuario
+Formulario de acesso
+Formulario Criação de personagem
+Formulario de Alteração de personagem
+
+-----------------------------------------------------------------------
+
+CRIAR TABELAS #
+PERSISTIR VALORES PRÉ-DEFINIDOS 
+
+Classes: 
+º Guerreiro (1) - 11 / 12 / 9 / 8 / 10 #
+º Paladino (2) - 12 / 10 / 8 / 9 / 11 # 
+º Ladino (3) - 9 / 10 / 12 / 8 / 11 #
+º Mago (4) - 9 / 8 / 11 / 12 / 10 # 
+º Caçador (5) - 9 / 10 / 11 / 8 / 12 # 
+º Clérigo (6) - 9 / 8 / 10 / 12 / 11 #
+
+Itens
+Guerreiro:
+    Armas:
+    º Espada
+    º Clava
+    º Machado
+    Armaduras:
+    º Armadura de Malha
+    º Armadura de Escamas
+Paladino:
+    Armas:
+    º Espada de duas mãos
+    º Martelo de Guerra
+    º Escudo
+    Armadura:
+    º Armadura de Placas de Ferro
+    º Armadura de Placas de Aço
+Ladino:
+    Armas:
+    º Adaga
+    º Rapieira
+    º Lâmina oculta
+    Armadura:
+    º Armadura de Couro
+    º Armadura de Pele
+Mago:
+    Armas:
+    º Grimório
+    º Cajado
+    º Varinha
+    Armadura:
+    º Túnica
+    º Manto
+Caçador:
+    Armas:
+    º Arco
+    º Besta
+    º Zarabatana
+    Armadura:
+    º Armadura de Camuflagem
+    º Capa
+Clérigo:
+    Armas:
+    º Turíbulo
+    º Medalhão
+    º Harpa
+    Armadura:
+    º Batina
+    º Poncho 
+
+A SER PERSISTIDO
