@@ -1,8 +1,65 @@
-import sqlite3
+CRIAR TABELAS #
+PERSISTIR VALORES PRÉ-DEFINIDOS 
 
+Classes: 
+º Guerreiro (1) - 11 / 12 / 9 / 8 / 10 #
+º Paladino (2) - 12 / 10 / 8 / 9 / 11 # 
+º Ladino (3) - 9 / 10 / 12 / 8 / 11 #
+º Mago (4) - 9 / 8 / 11 / 12 / 10 # 
+º Caçador (5) - 9 / 10 / 11 / 8 / 12 # 
+º Clérigo (6) - 9 / 8 / 10 / 12 / 11 #
 
-conn = sqlite3.connect('C:\guilherme\projeto_rpg\personagem.db')
-cursor = conn.cursor()
+Itens
+Guerreiro:
+    Armas:
+    º Espada
+    º Clava
+    º Machado
+    Armaduras:
+    º Armadura de Malha
+    º Armadura de Escamas
+Paladino:
+    Armas:
+    º Espada de duas mãos
+    º Martelo de Guerra
+    º Escudo
+    Armadura:
+    º Armadura de Placas de Ferro
+    º Armadura de Placas de Aço
+Ladino:
+    Armas:
+    º Adaga
+    º Rapieira
+    º Lâmina oculta
+    Armadura:
+    º Armadura de Couro
+    º Armadura de Pele
+Mago:
+    Armas:
+    º Grimório
+    º Cajado
+    º Varinha
+    Armadura:
+    º Túnica
+    º Manto
+Caçador:
+    Armas:
+    º Arco
+    º Besta
+    º Zarabatana
+    Armadura:
+    º Armadura de Camuflagem
+    º Capa
+Clérigo:
+    Armas:
+    º Turíbulo
+    º Medalhão
+    º Harpa
+    Armadura:
+    º Batina
+    º Poncho 
+
+A SER PERSISTIDO
 
 cursor.execute(
     '''
@@ -151,7 +208,3 @@ INSERT INTO Classe (nome_classe) VALUES
 ('Clérigo')
 '''
 )
-
-
-conn.commit()
-conn.close()

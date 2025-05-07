@@ -1,6 +1,6 @@
 
 import os
-from Modulos.classes import Usuario
+from Modulos.registro_sql import registrar_usuario
 
 
 def cls_term():
@@ -34,7 +34,7 @@ def selecionar_opcao(texto, min_valor=1, max_valor=10):
             print('-' * 80)
 
 
-def menu_1():
+def menu_1(usuario):
     """
     Acesso e Cadastro de Usuário - Menu 1
     """
@@ -58,10 +58,9 @@ def menu_1():
         elif opcao_1 == 2:
             cls_term()
             titulo()
-            usuario = Usuario()
             while True:
                 try:
-                    usuario.form_cadastro()
+                    registrar_usuario(usuario)
                     break
                 except ValueError as e:
                     print('-' * 80)
@@ -72,7 +71,7 @@ def menu_1():
             print('Usuário registrado com sucesso.')
             print('-' * 80)
             input('Aperte Enter para voltar ao Menu Principal: ')
-            return menu_1()
+            return menu_1(usuario)
 
         elif opcao_1 == 3:
             print('=' * 80)

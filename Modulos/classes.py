@@ -1,15 +1,17 @@
 class Usuario:
-    def __init__(self, nome_usuario = '', email = '', senha = ''):
+    def __init__(self, nome_usuario = '', cpf_usuario = '', email_usuario = '', senha_usuario = ''):
         """Classe Usuário
 
         Args:
             nome_usuario (str): _description_. Defaults to ''.
-            email (str): _description_. Defaults to ''.
-            senha (str): _description_. Defaults to ''.
+            cpf_usuario (str): _description_. Defaults to ''.
+            email_usuario (str): _description_. Defaults to ''.
+            senha_usuario (str): _description_. Defaults to ''.
         """
         self._nome_usuario = nome_usuario
-        self._email = email
-        self._senha = senha
+        self._cpf_usuario = cpf_usuario
+        self._email_usuario = email_usuario
+        self._senha_usuario = senha_usuario
 
 
     @property
@@ -34,17 +36,39 @@ class Usuario:
             raise ValueError('Nome de usuário deve ser preenchido.')
         self._nome_usuario = valor.strip()
 
-
     @property
-    def email(self):
+    def cpf_usuario(self):
         """
         Retorna valor privado
         """
-        return self._email
+        return self._cpf_usuario
     
 
-    @email.setter
-    def email(self, valor):
+    @cpf_usuario.setter
+    def cpf_usuario(self, valor):
+        """Receber valor
+
+        Args:
+            valor (str): cpf usuário
+
+        Raises:
+            ValueError: entrada vazia
+        """
+        if not valor.strip():
+            raise ValueError('Nome de usuário deve ser preenchido.')
+        self._cpf_usuario = valor.strip()
+
+
+    @property
+    def email_usuario(self):
+        """
+        Retorna valor privado
+        """
+        return self._email_usuario
+    
+
+    @email_usuario.setter
+    def email_usuario(self, valor):
         """Receber valor
 
         Args:
@@ -55,19 +79,19 @@ class Usuario:
         """
         if not valor.strip():
             raise ValueError('E-mail deve ser preenchido.')
-        self._email = valor.strip()
+        self._email_usuario = valor.strip()
 
 
     @property
-    def senha(self):
+    def senha_usuario(self):
         """
         Retorna valor privado
         """
-        return self._senha
+        return self._senha_usuario
     
 
-    @senha.setter
-    def senha(self, valor):
+    @senha_usuario.setter
+    def senha_usuario(self, valor):
         """Receber valor
 
         Args:
@@ -78,7 +102,7 @@ class Usuario:
         """
         if not valor.strip():
             raise ValueError('Senha deve ser preenchida.')
-        self._senha = valor.strip()
+        self._senha_usuario = valor.strip()
 
     def form_cadastro(self):
         """
@@ -86,7 +110,8 @@ class Usuario:
         """
         print('=' * 80)
         self.nome_usuario = input('Nome de usuário: ').strip().lower()
-        self.email = input('Email: ').strip().lower()
-        self.senha = input('Senha: ').strip()
+        self.cpf_usuario = input('CPF: ').strip()
+        self.email_usuario = input('Email: ').strip().lower()
+        self.senha_usuario = input('Senha: ').strip()
         print('=' * 80)
         print()
