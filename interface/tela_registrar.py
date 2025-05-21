@@ -101,6 +101,7 @@ def tela_registrar(tela):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if botao_registrar.collidepoint(event.pos):
                     registrar_usuario()
+                    return janela_principal()
                     
             if event.type == pygame.KEYDOWN:
                 if nome_ativo:
