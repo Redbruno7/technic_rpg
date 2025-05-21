@@ -1,5 +1,5 @@
 import sqlite3
-from Modulos.classes import Usuario
+from classes import Usuario
 
 
 conn = sqlite3.connect('C:\Bruno - Técnico DS\\technic_rpg\Guedgers.db')
