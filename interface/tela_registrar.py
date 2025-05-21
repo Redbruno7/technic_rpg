@@ -6,8 +6,7 @@ import cores
 import pygame
 import sys
 from principal import janela_principal
-import registro_sql
-
+import sqlite3
 
 pygame.init()
 
@@ -19,6 +18,17 @@ mao_cursor = pygame.SYSTEM_CURSOR_HAND
 digitar = pygame.SYSTEM_CURSOR_IBEAM
 
 
+conn = sqlite3.connect('C:\Bruno - Técnico DS\\technic_rpg\Guedgers.db')
+cursor = conn.cursor()
+
+def registrar_usuario():
+    cursor.execute(
+        '''
+    INSERT INTO Usuario (nome_usuario, cpf_usuario, email_usuario, senha_usuario)
+    VALUES (?, ?, ?, ?)
+    ''', ()
+    )
+    conn.commit()
 
 def tela_registrar(tela):
     botao_voltar = pygame.Rect(620, 600, 130, 50) # x, y, largura, altura
@@ -90,7 +100,7 @@ def tela_registrar(tela):
             # Botão Registrar
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if botao_registrar.collidepoint(event.pos):
-                    registro_sql.registrar_usuario()
+                    registrar_usuario()
                     
             if event.type == pygame.KEYDOWN:
                 if nome_ativo:
@@ -136,7 +146,14 @@ def tela_registrar(tela):
                     else:
                         # Adiciona o caractere pressionado ao texto
                         texto_senha += event.unicode
-        
+        def registrar_usuario():
+            cursor.execute(
+                '''
+            INSERT INTO Usuario (nome_usuario, cpf_usuario, email_usuario, senha_usuario)
+            VALUES (?, ?, ?, ?)
+            ''', (texto_nome, texto_cpf, texto_email, texto_senha)
+            )
+            conn.commit()
         # Preenche a tela com a cor de fundo
         tela.fill(cores.BRANCO)
 
