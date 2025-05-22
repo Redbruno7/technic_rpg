@@ -12,6 +12,7 @@ pygame.init()
 # Fonte
 fonte = pygame.font.SysFont('Unicode', 40)
 
+# Definir padrões de cursor
 padrao_cursor = pygame.SYSTEM_CURSOR_ARROW
 mao_cursor = pygame.SYSTEM_CURSOR_HAND
 digitar = pygame.SYSTEM_CURSOR_IBEAM

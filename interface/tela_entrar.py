@@ -7,8 +7,6 @@ from interface import cores
 pygame.init()
 os.system('cls')
 
-fonte = pygame.font.SysFont('Unicode', 40)
-
 
 def atualizar_cursor(pos, campos, botoes):
     """

@@ -1,61 +1,85 @@
 import os
-
-os.system('cls')
-
-from interface import cores
 import pygame
 import sys
+from interface import cores
+from interface.janela import janela_principal
 
 
 pygame.init()
+os.system('cls')
 
-# Define as dimensões da janela
-largura = 1600
-altura = 800
 
-# Cria a tela
-tela = pygame.display.set_mode((largura, altura))
-pygame.display.set_caption("Guedgers")
+def desenhar_botao(tela, botao, texto, cor_fundo, cor_texto, fonte):
+    """
+    Desenhar um botão com texto centralizado na tela
 
-padrao_cursor = pygame.SYSTEM_CURSOR_ARROW
-mao_cursor = pygame.SYSTEM_CURSOR_HAND
-# digitar = pygame.SYSTEM_CURSOR_IBEAM
+    Args:
+        tela (pygame.Surface): superfície onde o botão será desenhado
+        botao (pygame.Rect): retângulo que define a área do botão
+        texto (str): texto exibido no botão
+        cor_fundo (tuple): cor do fundo do botão (RGB)
+        cor_texto (tuple): cor do texto (RGB)
+        fonte (pygame.font.Font): fonte para renderizar o texto
+    """
+    pygame.draw.rect(tela, cor_fundo, botao)
+    texto_render = fonte.render(texto, True, cor_texto)
+    texto_rect = texto_render.get_rect(center=botao.center)
+    tela.blit(texto_render, texto_rect)
 
-fonte = pygame.font.SysFont('Unicode', 40)
+
+def atualizar_cursor(mouse_pos, botoes, cursor_padrao, cursor_mao):
+    """
+    Atualizar o cursor do mouse dependendo se está sobre algum botão
+
+    Args:
+        mouse_pos (tuple): posição atual do mouse
+        botoes (list of pygame.Rect): lista de botões para checar colisão
+        cursor_padrao: cursor padrão do sistema
+        cursor_mao: cursor de mão (hand) do sistema
+    """
+    if any(botao.collidepoint(mouse_pos) for botao in botoes):
+        pygame.mouse.set_cursor(cursor_mao)
+
+    else:
+        pygame.mouse.set_cursor(cursor_padrao)
+
 
 def tela_logar(tela, largura, altura, fonte, botoes, cursores, fundo):
-    from interface.janela import janela_principal
+    """
+    Criar tela de login simples com botão 'Sair' que retorna para a janela principal
 
+    Args:
+        tela (pygame.Surface): superfície onde a tela será desenhada
+        largura (int): largura da janela
+        altura (int): altura da janela
+        fonte (pygame.font.Font): fonte para textos
+        botoes (tuple): tupla com botões necessários (pode incluir botao_sair)
+        cursores (tuple): tupla com cursores (cursor padrão e cursor mão)
+        fundo (pygame.Surface): imagem ou cor de fundo da tela
 
-    botao_sair = pygame.Rect(650, 400, 100, 50) # x, y, largura, altura
+    Returns:
+        Função retornada pela janela principal (retorna outra tela ou fecha)
+    """
+    botao_sair = pygame.Rect(650, 400, 100, 50)  # Criando o botão sair
+    padrao_cursor, mao_cursor = cursores
 
     while True:
-
         mouse_pos = pygame.mouse.get_pos()
-
-        # Verifica se o mouse está sobre os campos de texto ou botão voltar
-        # if email_input.collidepoint(mouse_pos) or senha_input.collidepoint(mouse_pos):
-        # pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_IBEAM)  # Cursor de texto
-        if botao_sair.collidepoint(mouse_pos):
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-        else:
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+        atualizar_cursor(mouse_pos, [botao_sair], padrao_cursor, mao_cursor)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if botao_sair.collidepoint(event.pos):
-                    return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
+                    return janela_principal(
+                        tela, largura, altura, fonte, botoes, cursores, fundo)
 
-        # Preenche a tela com a cor de fundo
         tela.fill(cores.BRANCO)
 
-        pygame.draw.rect(tela, cores.VERMELHO_ESC , botao_sair)
-        texto = fonte.render('Sair', True, cores.PRETO)
-        texto_rect = texto.get_rect(center=botao_sair.center)
-        tela.blit(texto, texto_rect)
+        desenhar_botao(
+            tela, botao_sair, 'Sair', cores.VERMELHO_ESC, cores.PRETO, fonte)
 
-        # Atualiza o display
         pygame.display.update()
