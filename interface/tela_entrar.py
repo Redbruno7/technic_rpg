@@ -1,19 +1,18 @@
 import os
-
-os.system('cls')
-
 from interface import cores
 import pygame
 import sys
 
 
 pygame.init()
+os.system('cls')
 
+# Definir visuais do cursor
 padrao_cursor = pygame.SYSTEM_CURSOR_ARROW
 mao_cursor = pygame.SYSTEM_CURSOR_HAND
 digitar = pygame.SYSTEM_CURSOR_IBEAM
 
-# Fonte
+# Definir fonte
 fonte = pygame.font.SysFont('Unicode', 40)
 
 
@@ -21,128 +20,147 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
     from interface.janela import janela_principal
     from interface.tela_logado import tela_logar
 
-
-    botao_logar = pygame.Rect(850, 400, 100, 50)
-    botao_voltar = pygame.Rect(650, 400, 100, 50) # x, y, largura, altura
+    # Dimensionar elementos visuais
+    botao_logar = pygame.Rect(850, 400, 100, 50) # x, y, largura, altura
+    botao_voltar = pygame.Rect(650, 400, 100, 50)
     email_input = pygame.Rect(600, 150, 400, 50)
     senha_input = pygame.Rect(600, 300, 400, 50)
+
+    # Atribuir valores
     texto_email = ''
     texto_senha = ''
+
+    # Criar evento de desselecionar campo
     email_ativo = False
     senha_ativo = False
 
-    # Variáveis de controle de "rolagem" do texto
+    # Criar variáveis de controle de deslocamento do texto
     offset_email = 0
     offset_senha = 0
 
     while True:
 
+        # Identificar posição do cursor
         mouse_pos = pygame.mouse.get_pos()
 
-        # Verifica se o mouse está sobre os campos de texto ou botão voltar
+        # Identificar se cursor está sobre campo de texto
         if email_input.collidepoint(mouse_pos) or senha_input.collidepoint(mouse_pos):
-            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_IBEAM)  # Cursor de texto
+
+            # Definir padrão para cursor "Ibeam"
+            pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_IBEAM)
+
+        # Identificar se cursor está sobre botão
         elif botao_voltar.collidepoint(mouse_pos) or botao_logar.collidepoint(mouse_pos):
+
+            # Definir padrão para cursor "Hand"
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
+
+        # Retornar ao padrão "Arrow"
         else:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
+        # Definir eventos de clique
         for event in pygame.event.get():
+
+            # Finalizar programa
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
             if event.type == pygame.MOUSEBUTTONDOWN:
+
+                # Direcionar para tela principal
                 if botao_voltar.collidepoint(event.pos):
                     return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
             
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if botao_logar.collidepoint(event.pos):
+                # Direcionar para tela logado
+                elif botao_logar.collidepoint(event.pos):
                     return tela_logar(tela, largura, altura, fonte, botoes, cursores, fundo)
+                
+                email_ativo = email_input.collidepoint(event.pos)
+                senha_ativo = senha_input.collidepoint(event.pos)
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if email_input.collidepoint(event.pos):
-                    email_ativo = True # Ativa o campo
-                else:
-                    email_ativo = False # Desativa o campo
-            
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if senha_input.collidepoint(event.pos):
-                    senha_ativo = True # Ativa o campo
-                else:
-                    senha_ativo = False # Desativa o campo
-            
+            # Definir evento de tecla
             if event.type == pygame.KEYDOWN:
+
+                # Verificar seleção do campo email
                 if email_ativo:
+
+                    # Definir tecla para apagar texto
                     if event.key == pygame.K_BACKSPACE:
-                        # apaga o ultimo caracter
+
+                        # Apagar último caractere
                         texto_email = texto_email[:-1]
-                    elif event.key == pygame.K_RETURN:
-                        # Quando pressionar enter aparece o texto
-                        print('Texto digitado:', texto_email)
+                    
+                    # Adicionar caractere referente à tecla pressionada
                     else:
-                        # Adiciona o caractere pressionado ao texto
                         texto_email += event.unicode
 
+                # Verificar seleção do campo senha
                 if senha_ativo:
                     if event.key == pygame.K_BACKSPACE:
-                        # apaga o ultimo caracter
                         texto_senha = texto_senha[:-1]
-                    elif event.key == pygame.K_RETURN:
-                        # Quando pressionar enter aparece o texto
-                        print('Texto digitado:', texto_senha)
+
                     else:
-                        # Adiciona o caractere pressionado ao texto
                         texto_senha += event.unicode
         
-        # Preenche a tela com a cor de fundo
+        # Preencher tela com cor de fundo
         tela.fill(cores.BRANCO)
 
-        # Renderiza os rótulos "Email" e "Senha" acima dos campos de entrada
+        # Renderizar títulos dos campos - email, senha
         email = fonte.render('Email', True, cores.PRETO)
         senha = fonte.render('Senha', True, cores.PRETO)
-        tela.blit(email, (email_input.x, email_input.y - 40))   # Exibe "Email" acima do campo
-        tela.blit(senha, (senha_input.x, senha_input.y - 40))   # Exibe "Senha" acima do campo
 
-        # Desenha os retângulos dos campos de entrada
-        pygame.draw.rect(tela, cores.OURO, email_input, 2)      # Campo para digitar o email
-        pygame.draw.rect(tela, cores.OURO, senha_input, 2)      # Campo para digitar a senha
+        # Dimensionar texto dos campos
+        tela.blit(email, (email_input.x, email_input.y - 40))
+        tela.blit(senha, (senha_input.x, senha_input.y - 40))
 
-        # Define a cor do texto digitado com base na ativação dos campos
+        # Desenhar campos de texto
+        pygame.draw.rect(tela, cores.OURO, email_input, 2)
+        pygame.draw.rect(tela, cores.OURO, senha_input, 2)
+
+        # Definir a cor do texto digitado - campo selecionado, campo não selecionado
         cor_email = cores.PRETO if email_ativo else cores.CINZA_CLARO
         cor_senha = cores.PRETO if senha_ativo else cores.CINZA_CLARO
 
-        # Renderiza o texto digitado nos campos
+        # Renderizar o texto digitado
         texto_renderizado_email = fonte.render(texto_email, True, cor_email)
         texto_renderizado_senha = fonte.render(texto_senha, True, cor_senha)
 
+        # Desenhar botões - voltar, entrar
         pygame.draw.rect(tela, cores.VERMELHO_ESCURO , botao_voltar)
-        texto = fonte.render('Voltar', True, cores.PRETO)
-        texto_rect = texto.get_rect(center=botao_voltar.center)
-        tela.blit(texto, texto_rect)
-
         pygame.draw.rect(tela, cores.OURO , botao_logar)
-        texto = fonte.render('Entrar', True, cores.PRETO)
-        texto_rect = texto.get_rect(center=botao_logar.center)
-        tela.blit(texto, texto_rect)
 
-        # Cálculo da centralização vertical do texto
+        # Renderizar texto dos botões
+        texto_voltar = fonte.render('Voltar', True, cores.PRETO)
+        texto_entrar = fonte.render('Entrar', True, cores.PRETO)
+
+        # Centralizar texto nos botões
+        texto_rect = texto_voltar.get_rect(center=botao_voltar.center)
+        tela.blit(texto_voltar, texto_rect)        
+        texto_rect = texto_entrar.get_rect(center=botao_logar.center)
+        tela.blit(texto_entrar, texto_rect)
+
+        # Centralizar verticalmente texto digitado
         altura_texto_email = texto_renderizado_email.get_height()
         altura_texto_senha = texto_renderizado_senha.get_height()
-
         pos_y_email = email_input.centery - altura_texto_email // 2
         pos_y_senha = senha_input.centery - altura_texto_senha // 2
 
-        # Calcula deslocamento para mostrar final do texto se for maior que o campo
+        # Posicionar início do deslocamento para exibir final do texto digitado
         offset_email = max(0, texto_renderizado_email.get_width() - (email_input.width - 10))
         offset_senha = max(0, texto_renderizado_senha.get_width() - (senha_input.width - 10))
 
-        # Clip e blit dos campos
+        # Recortar campo email
         tela.set_clip(email_input)
         tela.blit(texto_renderizado_email, (email_input.x + 5 - offset_email, pos_y_email))
+
+        # Recortar campo senha
         tela.set_clip(senha_input)
         tela.blit(texto_renderizado_senha, (senha_input.x + 5 - offset_senha, pos_y_senha))
+
+        # Desativar recortes
         tela.set_clip(None)
         
-        # Atualiza a tela
+        # Atualizar a janela
         pygame.display.update()

@@ -30,10 +30,12 @@ def janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo):
         # Identificar posição do cursor
         mouse_pos = pygame.mouse.get_pos()
 
-        # Identificar se cursor está sob qualquer botão
+        # Identificar se cursor está sobre botão
         if (botao_entrar.collidepoint(mouse_pos) or 
             botao_registrar.collidepoint(mouse_pos) or 
             botao_sair.collidepoint(mouse_pos)):
+
+            # Definir padrão para cursor "Hand"
             pygame.mouse.set_cursor(mao_cursor)
 
         # Retorna ao cursor padrão
@@ -48,7 +50,7 @@ def janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo):
                 pygame.quit()
                 sys.exit()
 
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
 
                 # Direcionar para tela de login
                 if botao_entrar.collidepoint(event.pos):
@@ -70,3 +72,4 @@ def janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo):
 
         # Atualizar o display
         pygame.display.update()
+        
