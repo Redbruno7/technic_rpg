@@ -1,4 +1,3 @@
-# Cores em RGB
 BRANCO         = (255, 255, 255)
 PRETO          = (0, 0, 0)
 CINZA          = (128, 128, 128)

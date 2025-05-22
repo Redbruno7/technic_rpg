@@ -2,11 +2,9 @@ import os
 
 os.system('cls')
 
-import cores
+from interface import cores
 import pygame
 import sys
-from principal import janela_principal
-from tela_logado import tela_logar
 
 
 pygame.init()
@@ -19,7 +17,11 @@ digitar = pygame.SYSTEM_CURSOR_IBEAM
 fonte = pygame.font.SysFont('Unicode', 40)
 
 
-def tela_entrar(tela):
+def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
+    from interface.janela import janela_principal
+    from interface.tela_logado import tela_logar
+
+
     botao_logar = pygame.Rect(850, 400, 100, 50)
     botao_voltar = pygame.Rect(650, 400, 100, 50) # x, y, largura, altura
     email_input = pygame.Rect(600, 150, 400, 50)
@@ -52,11 +54,11 @@ def tela_entrar(tela):
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if botao_voltar.collidepoint(event.pos):
-                    return janela_principal()
+                    return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
             
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if botao_logar.collidepoint(event.pos):
-                    return tela_logar()
+                    return tela_logar(tela, largura, altura, fonte, botoes, cursores, fundo)
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if email_input.collidepoint(event.pos):

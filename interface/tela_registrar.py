@@ -2,10 +2,9 @@ import os
 
 os.system('cls')
 
-import cores
+from interface import cores
 import pygame
 import sys
-from principal import janela_principal
 import sqlite3
 
 pygame.init()
@@ -17,20 +16,13 @@ padrao_cursor = pygame.SYSTEM_CURSOR_ARROW
 mao_cursor = pygame.SYSTEM_CURSOR_HAND
 digitar = pygame.SYSTEM_CURSOR_IBEAM
 
-
 conn = sqlite3.connect('C:\Bruno - Técnico DS\\technic_rpg\Guedgers.db')
 cursor = conn.cursor()
 
-def registrar_usuario():
-    cursor.execute(
-        '''
-    INSERT INTO Usuario (nome_usuario, cpf_usuario, email_usuario, senha_usuario)
-    VALUES (?, ?, ?, ?)
-    ''', ()
-    )
-    conn.commit()
 
-def tela_registrar(tela):
+def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
+    from interface.janela import janela_principal
+
     botao_voltar = pygame.Rect(620, 600, 130, 50) # x, y, largura, altura
     botao_registrar = pygame.Rect(850, 600, 130, 50)
     nome_input = pygame.Rect(600, 150, 400, 50)
@@ -71,7 +63,7 @@ def tela_registrar(tela):
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if botao_voltar.collidepoint(event.pos):
-                    return janela_principal()
+                    return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
             
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if nome_input.collidepoint(event.pos):
@@ -101,7 +93,7 @@ def tela_registrar(tela):
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if botao_registrar.collidepoint(event.pos):
                     registrar_usuario()
-                    return janela_principal()
+                    return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
                     
             if event.type == pygame.KEYDOWN:
                 if nome_ativo:
@@ -147,6 +139,8 @@ def tela_registrar(tela):
                     else:
                         # Adiciona o caractere pressionado ao texto
                         texto_senha += event.unicode
+
+
         def registrar_usuario():
             cursor.execute(
                 '''
@@ -155,6 +149,7 @@ def tela_registrar(tela):
             ''', (texto_nome, texto_cpf, texto_email, texto_senha)
             )
             conn.commit()
+            
         # Preenche a tela com a cor de fundo
         tela.fill(cores.BRANCO)
 

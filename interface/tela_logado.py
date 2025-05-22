@@ -2,10 +2,9 @@ import os
 
 os.system('cls')
 
-import cores
+from interface import cores
 import pygame
 import sys
-from principal import janela_principal
 
 
 pygame.init()
@@ -24,7 +23,10 @@ mao_cursor = pygame.SYSTEM_CURSOR_HAND
 
 fonte = pygame.font.SysFont('Unicode', 40)
 
-def tela_logar():
+def tela_logar(tela, largura, altura, fonte, botoes, cursores, fundo):
+    from interface.janela import janela_principal
+
+
     botao_sair = pygame.Rect(650, 400, 100, 50) # x, y, largura, altura
 
     while True:
@@ -45,7 +47,7 @@ def tela_logar():
                 sys.exit()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if botao_sair.collidepoint(event.pos):
-                    return janela_principal()
+                    return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
 
         # Preenche a tela com a cor de fundo
         tela.fill(cores.BRANCO)
