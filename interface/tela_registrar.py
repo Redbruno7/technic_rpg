@@ -213,7 +213,7 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
         tela.set_clip(None)
 
-        pygame.draw.rect(tela, cores.VERMELHO_ESCURO , botao_voltar)
+        pygame.draw.rect(tela, cores.VERMELHO_ESC , botao_voltar)
         texto = fonte.render('Voltar', True, cores.PRETO)
         texto_rect = texto.get_rect(center=botao_voltar.center)
         tela.blit(texto, texto_rect)

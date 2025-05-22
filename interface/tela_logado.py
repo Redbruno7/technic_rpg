@@ -52,7 +52,7 @@ def tela_logar(tela, largura, altura, fonte, botoes, cursores, fundo):
         # Preenche a tela com a cor de fundo
         tela.fill(cores.BRANCO)
 
-        pygame.draw.rect(tela, cores.VERMELHO_ESCURO , botao_sair)
+        pygame.draw.rect(tela, cores.VERMELHO_ESC , botao_sair)
         texto = fonte.render('Sair', True, cores.PRETO)
         texto_rect = texto.get_rect(center=botao_sair.center)
         tela.blit(texto, texto_rect)
