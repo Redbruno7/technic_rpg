@@ -48,6 +48,21 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
     mensagem_erro = ''
 
+    backspace_pressed_nome = False
+    backspace_timer_nome = 0
+
+    backspace_pressed_cpf = False
+    backspace_timer_cpf = 0
+
+    backspace_pressed_email = False
+    backspace_timer_email = 0
+
+    backspace_pressed_senha = False
+    backspace_timer_senha = 0
+
+    BACKSPACE_DELAY = 100  # milissegundos
+
+
     def registrar_usuario():
         nonlocal mensagem_erro
 
@@ -86,6 +101,7 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
         except Exception as e:
             mensagem_erro = f'Erro ao registrar: {str(e)}'
             return False
+        
 
     while True:
         mouse_pos = pygame.mouse.get_pos()
@@ -117,7 +133,6 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
                     sucesso = registrar_usuario()
 
                     if sucesso:
-                        conn.close()
                         return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
                     
             if event.type == pygame.KEYDOWN:

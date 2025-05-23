@@ -169,6 +169,10 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
     mensagem_erro = ''
 
+    backspace_pressed = False
+    backspace_timer = 0
+    BACKSPACE_DELAY = 100
+
 
     def autenticar_usuario(email, senha):
         try:
@@ -192,30 +196,43 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
             mouse_pos, [email_input, senha_input], [botao_voltar, botao_logar]
             )
 
+        teclas = pygame.key.get_pressed()
+        tempo_atual = pygame.time.get_ticks()
+
+        if teclas[pygame.K_BACKSPACE]:
+            if (email_ativo or senha_ativo) and tempo_atual - backspace_timer > BACKSPACE_DELAY:
+                if email_ativo and texto_email:
+                    texto_email = texto_email[:-1]
+
+                elif senha_ativo and texto_senha:
+                    texto_senha = texto_senha[:-1]
+
+                backspace_timer = tempo_atual
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
 
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            elif event.type == pygame.MOUSEBUTTONDOWN:
                 if botao_voltar.collidepoint(event.pos):
-                    return janela_principal(
-                        tela, largura, altura, fonte, botoes, cursores, fundo)
+                    return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
                 
                 elif botao_logar.collidepoint(event.pos):
                     if autenticar_usuario(texto_email, texto_senha):
                         return tela_logar(tela, largura, altura, fonte, botoes, cursores, fundo)
+                    
                     else:
                         mensagem_erro = "Email e/ou Senha incorretos."
 
-                
-                email_ativo, senha_ativo = verificar_campo_ativo(
-                    event.pos, email_input, senha_input)
+                email_ativo, senha_ativo = verificar_campo_ativo(event.pos, email_input, senha_input)
 
-            if event.type == pygame.KEYDOWN:
-                texto_email, texto_senha = processar_digito(
-                    event, email_ativo, senha_ativo, texto_email, texto_senha)
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_BACKSPACE:
+                    backspace_timer = pygame.time.get_ticks() - BACKSPACE_DELAY
 
+                else:
+                    texto_email, texto_senha = processar_digito(event, email_ativo, senha_ativo, texto_email, texto_senha)
         
         tela.fill(cores.BRANCO)
 

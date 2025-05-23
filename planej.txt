@@ -1,0 +1,16 @@
+O QUE FALTA
+
++ Funções formulário
+    º BACKSPACE contínuo | tela_entrar
+    º TAB para alterar campo
+    º Visual piscante do campo de texto
+    º Seleção dentro do campo de texto a partir de clique do cursor
+
++ Tela Logado
+    º Construir tela com base no usuário logado
+
++ Design das telas:
+    º Principal
+    º Entrar
+    º Registrar
+    º Logado
