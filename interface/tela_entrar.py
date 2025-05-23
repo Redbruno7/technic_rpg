@@ -1,11 +1,15 @@
 import os
 import pygame
 import sys
+import sqlite3
 from interface import cores
 
 
 pygame.init()
 os.system('cls')
+
+
+conn = sqlite3.connect(r'C:\Bruno - Técnico DS\technic_rpg\Guedgers.db')
 
 
 def atualizar_cursor(pos, campos, botoes):
@@ -163,6 +167,25 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
     email_ativo = False
     senha_ativo = False
 
+    mensagem_erro = ''
+
+
+    def autenticar_usuario(email, senha):
+        try:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM Usuario WHERE email_usuario=? AND senha_usuario=?", 
+                (email, senha)
+            )
+            usuario = cursor.fetchone()
+            return usuario is not None
+
+        except sqlite3.Error as e:
+            nonlocal mensagem_erro
+            mensagem_erro = f"Erro no banco: {str(e)}"
+            return False
+
+
     while True:
         mouse_pos = pygame.mouse.get_pos()
         atualizar_cursor(
@@ -178,10 +201,13 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
                 if botao_voltar.collidepoint(event.pos):
                     return janela_principal(
                         tela, largura, altura, fonte, botoes, cursores, fundo)
-            
+                
                 elif botao_logar.collidepoint(event.pos):
-                    return tela_logar(
-                        tela, largura, altura, fonte, botoes, cursores, fundo)
+                    if autenticar_usuario(texto_email, texto_senha):
+                        return tela_logar(tela, largura, altura, fonte, botoes, cursores, fundo)
+                    else:
+                        mensagem_erro = "Email e/ou Senha incorretos."
+
                 
                 email_ativo, senha_ativo = verificar_campo_ativo(
                     event.pos, email_input, senha_input)
@@ -201,5 +227,10 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
         desenhar_botao(tela, botao_voltar, "Voltar", fonte, cores.VERMELHO_ESC)
         desenhar_botao(tela, botao_logar, "Entrar", fonte, cores.OURO)
+
+        if mensagem_erro:
+            fonte_erro = pygame.font.SysFont('Unicode', 40)
+            texto_erro = fonte_erro.render(mensagem_erro, True, cores.VERMELHO_ESC)
+            tela.blit(texto_erro, (610, 500))
         
         pygame.display.update()
