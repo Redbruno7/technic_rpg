@@ -85,6 +85,5 @@ INSERT INTO Produto (nome_produto, valor) VALUES
 '''
 )
 
-
 conn.commit()
 conn.close()

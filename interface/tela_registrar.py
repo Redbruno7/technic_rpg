@@ -56,11 +56,28 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
             return False  # ERRO
 
         try:
+            import re
+
+            
+            # Validação de e-mail (tem que conter '@')
+            if '@' not in texto_email:
+                mensagem_erro = 'E-mail inválido! Deve conter @'
+                return False
+
+            # Validação e formatação de CPF
+            cpf_limpo = re.sub(r'\D', '', texto_cpf)
+            if len(cpf_limpo) != 11:
+                mensagem_erro = 'CPF deve ter 11 dígitos numéricos!'
+                return False
+
+            # Formatar CPF com máscara (000.000.000-00)
+            cpf_formatado = f'{cpf_limpo[:3]}.{cpf_limpo[3:6]}.{cpf_limpo[6:9]}-{cpf_limpo[9:]}'
+
             cursor.execute(
                 '''
                 INSERT INTO Usuario (nome_usuario, cpf_usuario, email_usuario, senha_usuario)
                 VALUES (?, ?, ?, ?)
-                ''', (texto_nome, texto_cpf, texto_email, texto_senha)
+                ''', (texto_nome, cpf_formatado, texto_email, texto_senha)
             )
             conn.commit()
             mensagem_erro = 'Usuário registrado com sucesso!'
@@ -117,12 +134,23 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
                 if cpf_ativo:
                     if event.key == pygame.K_BACKSPACE:
                         texto_cpf = texto_cpf[:-1]
+                        texto_cpf = ''.join(filter(str.isdigit, texto_cpf))
 
-                    elif event.key == pygame.K_RETURN:
-                        print('Texto digitado:', texto_cpf)
-
-                    else:
+                    elif event.unicode.isdigit() and len(texto_cpf.replace('.', '').replace('-', '')) < 11:
                         texto_cpf += event.unicode
+                        numeros = ''.join(filter(str.isdigit, texto_cpf))
+
+                        if len(numeros) <= 3:
+                            texto_cpf = numeros
+
+                        elif len(numeros) <= 6:
+                            texto_cpf = f"{numeros[:3]}.{numeros[3:]}"
+
+                        elif len(numeros) <= 9:
+                            texto_cpf = f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:]}"
+
+                        else:
+                            texto_cpf = f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:9]}-{numeros[9:]}"
                 
                 if email_ativo:
                     if event.key == pygame.K_BACKSPACE:
