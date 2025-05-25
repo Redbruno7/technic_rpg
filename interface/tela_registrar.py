@@ -2,10 +2,16 @@ import os
 
 os.system('cls')
 
-from interface import cores
 import pygame
 import sys
 import sqlite3
+from funcoes_padrao import cores
+from funcoes_padrao.mtd_form import atualizar_cursor
+from funcoes_padrao.mtd_form import desenhar_rotulo_campo
+from funcoes_padrao.mtd_form import desenhar_campo_texto
+from funcoes_padrao.mtd_form import verificar_campo_ativo_registro
+from funcoes_padrao.mtd_form import desenhar_botao
+from funcoes_padrao.mtd_form import processar_digito_registro
 
 pygame.init()
 
@@ -17,12 +23,12 @@ padrao_cursor = pygame.SYSTEM_CURSOR_ARROW
 mao_cursor = pygame.SYSTEM_CURSOR_HAND
 digitar = pygame.SYSTEM_CURSOR_IBEAM
 
-conn = sqlite3.connect(r'C:\Bruno - Técnico DS\technic_rpg\Guedgers.db')
+conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
 cursor = conn.cursor()
 
 
 def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
-    from interface.janela import janela_principal
+    from interface.tela_principal import janela_principal
 
 
     botao_voltar = pygame.Rect(620, 600, 130, 50) # x, y, largura, altura
@@ -41,26 +47,10 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
     email_ativo = False
     senha_ativo = False
 
-    offset_nome = 0
-    offset_cpf = 0
-    offset_email = 0
-    offset_senha = 0
-
     mensagem_erro = ''
 
-    backspace_pressed_nome = False
-    backspace_timer_nome = 0
-
-    backspace_pressed_cpf = False
-    backspace_timer_cpf = 0
-
-    backspace_pressed_email = False
-    backspace_timer_email = 0
-
-    backspace_pressed_senha = False
-    backspace_timer_senha = 0
-
-    BACKSPACE_DELAY = 100  # milissegundos
+    backspace_timer = 0
+    BACKSPACE_DELAY = 100
 
 
     def registrar_usuario():
@@ -96,7 +86,7 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
             )
             conn.commit()
             mensagem_erro = 'Usuário registrado com sucesso!'
-            return True  # SUCESSO
+            return True
 
         except Exception as e:
             mensagem_erro = f'Erro ao registrar: {str(e)}'
@@ -105,15 +95,38 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
     while True:
         mouse_pos = pygame.mouse.get_pos()
+        atualizar_cursor(mouse_pos, [nome_input, cpf_input, email_input, senha_input], [botao_voltar, botao_registrar])
         
-        if email_input.collidepoint(mouse_pos) or senha_input.collidepoint(mouse_pos) or cpf_input.collidepoint(mouse_pos) or nome_input.collidepoint(mouse_pos):
+        if email_input.collidepoint(
+            mouse_pos) or senha_input.collidepoint(mouse_pos) or cpf_input.collidepoint(mouse_pos) or nome_input.collidepoint(mouse_pos):
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_IBEAM)
 
-        elif botao_voltar.collidepoint(mouse_pos) or botao_registrar.collidepoint(mouse_pos):
+        elif botao_voltar.collidepoint(
+            mouse_pos) or botao_registrar.collidepoint(
+                mouse_pos):
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
 
         else:
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
+
+        teclas = pygame.key.get_pressed()
+        tempo_atual = pygame.time.get_ticks()
+
+        if teclas[pygame.K_BACKSPACE]:
+            if (nome_ativo or cpf_ativo or email_ativo or senha_ativo) and tempo_atual - backspace_timer > BACKSPACE_DELAY:
+                if nome_ativo and texto_nome:
+                    texto_nome = texto_nome[:-1]
+
+                elif cpf_ativo and texto_cpf:
+                    texto_cpf = texto_cpf[:-1]
+
+                elif email_ativo and texto_email:
+                    texto_email = texto_email[:-1]
+
+                elif senha_ativo and texto_senha:
+                    texto_senha = texto_senha[:-1]
+
+                backspace_timer = tempo_atual
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -135,124 +148,61 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
                     if sucesso:
                         return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
                     
+                nome_ativo, cpf_ativo, email_ativo, senha_ativo = verificar_campo_ativo_registro(event.pos, nome_input, cpf_input, email_input, senha_input)
+            
+            # Eventos de teclas
             if event.type == pygame.KEYDOWN:
-                if nome_ativo:
-                    if event.key == pygame.K_BACKSPACE:
-                        texto_nome = texto_nome[:-1]
 
-                    elif event.key == pygame.K_RETURN:
-                        print('Texto digitado:', texto_nome)
+                # Evento BACKSPACE
+                if event.key == pygame.K_BACKSPACE:
+                    backspace_timer = pygame.time.get_ticks() - BACKSPACE_DELAY
 
+                # Evento TAB
+                elif event.key == pygame.K_TAB:
+                    if nome_ativo:
+                        nome_ativo = False
+                        cpf_ativo = True
+                    
+                    elif cpf_ativo:
+                        cpf_ativo = False
+                        email_ativo = True
+
+                    elif email_ativo:
+                        email_ativo = False
+                        senha_ativo = True
+
+                    elif senha_ativo:
+                        senha_ativo = False
+                        nome_ativo = True
+                        
                     else:
-                        texto_nome += event.unicode
-                
-                if cpf_ativo:
-                    if event.key == pygame.K_BACKSPACE:
-                        texto_cpf = texto_cpf[:-1]
-                        texto_cpf = ''.join(filter(str.isdigit, texto_cpf))
+                        nome_ativo = True
 
-                    elif event.unicode.isdigit() and len(texto_cpf.replace('.', '').replace('-', '')) < 11:
-                        texto_cpf += event.unicode
-                        numeros = ''.join(filter(str.isdigit, texto_cpf))
-
-                        if len(numeros) <= 3:
-                            texto_cpf = numeros
-
-                        elif len(numeros) <= 6:
-                            texto_cpf = f"{numeros[:3]}.{numeros[3:]}"
-
-                        elif len(numeros) <= 9:
-                            texto_cpf = f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:]}"
-
-                        else:
-                            texto_cpf = f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:9]}-{numeros[9:]}"
-                
-                if email_ativo:
-                    if event.key == pygame.K_BACKSPACE:
-                        texto_email = texto_email[:-1]
-
-                    elif event.key == pygame.K_RETURN:
-                        print('Texto digitado:', texto_email)
-
-                    else:
-                        texto_email += event.unicode
-                
-                if senha_ativo:
-                    if event.key == pygame.K_BACKSPACE:
-                        texto_senha = texto_senha[:-1]
-
-                    elif event.key == pygame.K_RETURN:
-                        print('Texto digitado:', texto_senha)
-
-                    else:
-                        texto_senha += event.unicode
+                else:
+                    texto_nome, texto_cpf, texto_email, texto_senha = processar_digito_registro(event, nome_ativo, cpf_ativo, email_ativo, senha_ativo, texto_nome, texto_cpf, texto_email, texto_senha)
             
         tela.fill(cores.BRANCO)
 
-        nome = fonte.render('Nome', True, cores.PRETO)
-        cpf = fonte.render('CPF', True, cores.PRETO)
-        email = fonte.render('Email', True, cores.PRETO)
-        senha = fonte.render('Senha', True, cores.PRETO)
-        tela.blit(nome, (nome_input.x, nome_input.y - 40))
-        tela.blit(cpf, (cpf_input.x, cpf_input.y - 40))
-        tela.blit(email, (email_input.x, email_input.y - 40))
-        tela.blit(senha, (senha_input.x, senha_input.y - 40))
+        # Método - Título campo
+        desenhar_rotulo_campo(tela, fonte, nome_input, "Nome")
+        desenhar_rotulo_campo(tela, fonte, cpf_input, "CPF")
+        desenhar_rotulo_campo(tela, fonte, email_input, "Email")
+        desenhar_rotulo_campo(tela, fonte, senha_input, "Senha")
 
-        pygame.draw.rect(tela, cores.OURO, nome_input, 2)
-        pygame.draw.rect(tela, cores.OURO, cpf_input, 2)
-        pygame.draw.rect(tela, cores.OURO, email_input, 2)
-        pygame.draw.rect(tela, cores.OURO, senha_input, 2)
+        # Método - Preencheimento do campo de texto
+        desenhar_campo_texto(tela, fonte, nome_input, texto_nome, nome_ativo)
+        desenhar_campo_texto(tela, fonte, cpf_input, texto_cpf, cpf_ativo)
+        desenhar_campo_texto(tela, fonte, email_input, texto_email, email_ativo)
+        desenhar_campo_texto(tela, fonte, senha_input, texto_senha, senha_ativo, ocultar=True)
 
-        cor_nome = cores.PRETO if nome_ativo else cores.CINZA_CLARO
-        cor_cpf = cores.PRETO if cpf_ativo else cores.CINZA_CLARO
-        cor_email = cores.PRETO if email_ativo else cores.CINZA_CLARO
-        cor_senha = cores.PRETO if senha_ativo else cores.CINZA_CLARO
-
-        texto_renderizado_nome = fonte.render(texto_nome, True, cor_nome)
-        texto_renderizado_cpf = fonte.render(texto_cpf, True, cor_cpf)
-        texto_renderizado_email = fonte.render(texto_email, True, cor_email)
-        senha_ofuscada = '*' * len(texto_senha)
-        texto_renderizado_senha = fonte.render(senha_ofuscada, True, cor_senha)
-
-        altura_texto_nome = texto_renderizado_nome.get_height()
-        altura_texto_cpf = texto_renderizado_cpf.get_height()
-        altura_texto_email = texto_renderizado_email.get_height()
-        altura_texto_senha = texto_renderizado_senha.get_height()
-
-        pos_y_nome = nome_input.centery - altura_texto_nome // 2
-        pos_y_cpf = cpf_input.centery - altura_texto_cpf // 2
-        pos_y_email = email_input.centery - altura_texto_email // 2
-        pos_y_senha = senha_input.centery - altura_texto_senha // 2
-
-        offset_nome = max(0, texto_renderizado_nome.get_width() - (nome_input.width - 10))
-        offset_cpf = max(0, texto_renderizado_cpf.get_width() - (cpf_input.width - 10))
-        offset_email = max(0, texto_renderizado_email.get_width() - (email_input.width - 10))
-        offset_senha = max(0, texto_renderizado_senha.get_width() - (senha_input.width - 10))
-
-        tela.set_clip(nome_input)
-        tela.blit(texto_renderizado_nome, (nome_input.x + 5 - offset_nome, pos_y_nome))
-        tela.set_clip(cpf_input)
-        tela.blit(texto_renderizado_cpf, (cpf_input.x + 5 - offset_cpf, pos_y_cpf))
-        tela.set_clip(email_input)
-        tela.blit(texto_renderizado_email, (email_input.x + 5 - offset_email, pos_y_email))
-        tela.set_clip(senha_input)
-        tela.blit(texto_renderizado_senha, (senha_input.x + 5 - offset_senha, pos_y_senha))
-
-        tela.set_clip(None)
-
-        pygame.draw.rect(tela, cores.VERMELHO_ESC , botao_voltar)
-        texto = fonte.render('Voltar', True, cores.PRETO)
-        texto_rect = texto.get_rect(center=botao_voltar.center)
-        tela.blit(texto, texto_rect)
-
-        pygame.draw.rect(tela, cores.OURO, botao_registrar)
-        texto = fonte.render('Registrar', True, cores.PRETO)
-        texto_rect = texto.get_rect(center=botao_registrar.center)
-        tela.blit(texto, texto_rect)
+        # Método - Desenho dos botões
+        desenhar_botao(tela, botao_voltar, "Voltar", fonte, cores.VERMELHO_ESC)
+        desenhar_botao(tela, botao_registrar, "Registrar", fonte, cores.OURO)
 
         if mensagem_erro:
             fonte_erro = pygame.font.SysFont('UNICODE', 40)
-            texto_erro = fonte_erro.render(mensagem_erro, True, cores.VERMELHO_ESC)
+            texto_erro = fonte_erro.render(
+                mensagem_erro, True, cores.VERMELHO_ESC)
             erro_rect = texto_erro.get_rect(center=(largura // 2, 700))
             tela.blit(texto_erro, erro_rect)
 

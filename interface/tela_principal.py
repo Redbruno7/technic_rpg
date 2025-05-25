@@ -1,23 +1,41 @@
 import pygame
 import sys
-from interface import tela_entrar, tela_registrar, cores
+from funcoes_padrao import cores
+from interface import tela_entrar, tela_registrar
+from funcoes_padrao.mtd_form import desenhar_botao
 
+# Iniciar pygame
+pygame.init()
 
-def desenhar_botao(tela, cor, botao, texto, fonte, cor_texto):
-    """
-    Desenhar um botão na tela com texto centralizado
+# Definir e atribuir dimensões da tela
+largura = 1600
+altura = 800
+tela = pygame.display.set_mode((largura, altura))
 
-    Args:
-    - tela: surface do pygame onde o botão será desenhado
-    - cor: cor de fundo do botão (tupla RGB)
-    - botao: retângulo (pygame.Rect) representando a área do botão
-    - texto: string a ser exibida dentro do botão
-    - fonte: objeto pygame.font.Font usado para renderizar o texto
-    - cor_texto: cor do texto (tupla RGB)
-    """
-    pygame.draw.rect(tela, cor, botao)
-    txt_render = fonte.render(texto, True, cor_texto)
-    tela.blit(txt_render, txt_render.get_rect(center=botao.center))
+# Nomear tela
+pygame.display.set_caption("Guedgers")
+
+# Definir fonte
+fonte = pygame.font.SysFont('Unicode', 40)
+
+# Dimensionar botões
+botao_entrar = pygame.Rect(735, 100, 130, 50)
+botao_registrar = pygame.Rect(735, 200, 130, 50)
+botao_sair = pygame.Rect(735, 300, 130, 50)
+
+# Unificar botões
+botoes = (botao_entrar, botao_registrar, botao_sair)
+
+# Definir visuais para cursor
+padrao_cursor = pygame.SYSTEM_CURSOR_ARROW
+mao_cursor = pygame.SYSTEM_CURSOR_HAND
+
+# Unificar cursores
+cursores = (padrao_cursor, mao_cursor)
+
+# Definir imagem de de fundo
+fundo = pygame.image.load("imgs/minecraft.jpg")
+fundo = pygame.transform.scale(fundo, (largura, altura))
 
 
 def janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo):
@@ -72,14 +90,8 @@ def janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo):
                     pygame.quit()
                     sys.exit()
 
-        desenhar_botao(
-            tela, cores.OURO, botao_entrar, 'Entrar', fonte, cores.PRETO
-            )
-        desenhar_botao(
-            tela, cores.OURO, botao_registrar, 'Registrar', fonte, cores.PRETO
-            )
-        desenhar_botao(
-            tela, cores.VERMELHO_ESC, botao_sair, 'Sair', fonte, cores.PRETO
-            )
+        desenhar_botao(tela, botao_entrar, "Entrar", fonte, cores.OURO)
+        desenhar_botao(tela, botao_registrar, "Registrar", fonte, cores.OURO)
+        desenhar_botao(tela, botao_sair, "Sair", fonte, cores.VERMELHO_ESC)
 
         pygame.display.update()

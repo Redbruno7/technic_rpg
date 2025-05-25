@@ -2,136 +2,19 @@ import os
 import pygame
 import sys
 import sqlite3
-from interface import cores
-
+from funcoes_padrao import cores
+from funcoes_padrao.mtd_form import atualizar_cursor
+from funcoes_padrao.mtd_form import desenhar_rotulo_campo
+from funcoes_padrao.mtd_form import desenhar_campo_texto
+from funcoes_padrao.mtd_form import verificar_campo_ativo_login
+from funcoes_padrao.mtd_form import desenhar_botao
+from funcoes_padrao.mtd_form import processar_digito_login
 
 pygame.init()
 os.system('cls')
 
 
-conn = sqlite3.connect(r'C:\Bruno - Técnico DS\technic_rpg\Guedgers.db')
-
-
-def atualizar_cursor(pos, campos, botoes):
-    """
-    Atualizar o cursor do mouse com base na posição atual
-
-    Args:
-        pos (tuple): Posição (x, y) atual do mouse
-        campos (list): Lista de retângulos representando os campos de texto
-        botoes (list): Lista de retângulos representando os botões
-    """
-    if any(campo.collidepoint(pos) for campo in campos):
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_IBEAM)
-
-    elif any(botao.collidepoint(pos) for botao in botoes):
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
-
-    else:
-        pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
-
-
-def verificar_campo_ativo(pos, campo_email, campo_senha):
-    """
-    Verificar se o usuário clicou em um dos campos de entrada (e-mail ou senha)
-
-    Args:
-        pos (tuple): Posição (x, y) do clique do mouse
-        campo_email (pygame.Rect): Retângulo do campo de e-mail
-        campo_senha (pygame.Rect): Retângulo do campo de senha
-
-    Returns:
-        tuple: Dois valores booleanos indicando se o campo de e-mail ou senha foi ativado
-    """
-    email_ativo = campo_email.collidepoint(pos)
-    senha_ativo = campo_senha.collidepoint(pos)
-
-    return email_ativo, senha_ativo
-
-
-def processar_digito(event, email_ativo, senha_ativo, texto_email, texto_senha):
-    """
-    Processar a digitação do teclado nos campos de texto
-
-    Args:
-        event (pygame.Event): Evento de tecla pressionada
-        email_ativo (bool): Indica se o campo de e-mail está ativo
-        senha_ativo (bool): Indica se o campo de senha está ativo
-        texto_email (str): Texto atual no campo de e-mail
-        texto_senha (str): Texto atual no campo de senha
-
-    Returns:
-        tuple: Texto atualizado dos campos de e-mail e senha
-    """
-    if email_ativo:
-        if event.key == pygame.K_BACKSPACE:
-            texto_email = texto_email[:-1]
-
-        else:
-            texto_email += event.unicode
-
-    elif senha_ativo:
-        if event.key == pygame.K_BACKSPACE:
-            texto_senha = texto_senha[:-1]
-
-        else:
-            texto_senha += event.unicode
-
-    return texto_email, texto_senha
-
-
-def desenhar_rotulo_campo(tela, fonte, campo, texto):
-    """
-    Desenhar um rótulo (título) acima de um campo de entrada
-
-    Args:
-        tela (pygame.Surface): Superfície onde será desenhado
-        fonte (pygame.font.Font): Fonte do texto
-        campo (pygame.Rect): Retângulo do campo de entrada
-        texto (str): Texto do rótulo
-    """
-    rotulo = fonte.render(texto, True, cores.PRETO)
-    tela.blit(rotulo, (campo.x, campo.y - 40))
-
-
-def desenhar_campo_texto(tela, fonte, campo, texto, ativo):
-    """
-    Desenhar um campo de texto com o conteúdo digitado
-
-    Args:
-        tela (pygame.Surface): Superfície onde será desenhado
-        fonte (pygame.font.Font): Fonte do texto
-        campo (pygame.Rect): Retângulo do campo de entrada
-        texto (str): Texto a ser exibido
-        ativo (bool): Indica se o campo está ativo (selecionado)
-    """
-    cor = cores.PRETO if ativo else cores.CINZA_CLARO
-    pygame.draw.rect(tela, cores.OURO, campo, 2)
-
-    texto_render = fonte.render(texto, True, cor)
-    offset = max(0, texto_render.get_width() - (campo.width - 10))
-    pos_y = campo.centery - texto_render.get_height() // 2
-
-    tela.set_clip(campo)
-    tela.blit(texto_render, (campo.x + 5 - offset, pos_y))
-    tela.set_clip(None)
-
-
-def desenhar_botao(tela, rect, texto, fonte, cor_fundo):
-    """
-    Desenhar um botão com texto centralizado
-
-    Args:
-        tela (pygame.Surface): Superfície onde será desenhado
-        rect (pygame.Rect): Retângulo do botão
-        texto (str): Texto do botão
-        fonte (pygame.font.Font): Fonte do texto
-        cor_fundo (tuple): Cor de fundo do botão
-    """
-    pygame.draw.rect(tela, cor_fundo, rect)
-    texto_render = fonte.render(texto, True, cores.PRETO)
-    texto_rect = texto_render.get_rect(center=rect.center)
-    tela.blit(texto_render, texto_rect)
+conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
 
 
 def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
@@ -153,7 +36,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
         - Botão "Voltar" retorna à tela principal
         - Atualiza o cursor dinamicamente conforme o elemento em foco
     """
-    from interface.janela import janela_principal
+    from interface.tela_principal import janela_principal
     from interface.tela_logado import tela_logar
 
     botao_logar = pygame.Rect(850, 400, 100, 50)
@@ -169,7 +52,6 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
     mensagem_erro = ''
 
-    backspace_pressed = False
     backspace_timer = 0
     BACKSPACE_DELAY = 100
 
@@ -192,9 +74,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
     while True:
         mouse_pos = pygame.mouse.get_pos()
-        atualizar_cursor(
-            mouse_pos, [email_input, senha_input], [botao_voltar, botao_logar]
-            )
+        atualizar_cursor(mouse_pos, [email_input, senha_input], [botao_voltar, botao_logar])
 
         teclas = pygame.key.get_pressed()
         tempo_atual = pygame.time.get_ticks()
@@ -225,14 +105,32 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
                     else:
                         mensagem_erro = "Email e/ou Senha incorretos."
 
-                email_ativo, senha_ativo = verificar_campo_ativo(event.pos, email_input, senha_input)
+                email_ativo, senha_ativo = verificar_campo_ativo_login(event.pos, email_input, senha_input)
 
-            elif event.type == pygame.KEYDOWN:
+            # Evento de tecla
+            if event.type == pygame.KEYDOWN:
+
+                # Evento BACKSPACE
                 if event.key == pygame.K_BACKSPACE:
                     backspace_timer = pygame.time.get_ticks() - BACKSPACE_DELAY
 
+                # Evento TAB
+                elif event.key == pygame.K_TAB:
+                    if email_ativo:
+                        email_ativo = False
+                        senha_ativo = True
+
+                    elif senha_ativo:
+                        senha_ativo = False
+                        email_ativo = True
+
+                    else:
+                        email_ativo = True
+
                 else:
-                    texto_email, texto_senha = processar_digito(event, email_ativo, senha_ativo, texto_email, texto_senha)
+                    texto_email, texto_senha = processar_digito_login(event, email_ativo, senha_ativo, texto_email, texto_senha)
+
+
         
         tela.fill(cores.BRANCO)
 
@@ -240,7 +138,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
         desenhar_rotulo_campo(tela, fonte, senha_input, "Senha")
 
         desenhar_campo_texto(tela, fonte, email_input, texto_email, email_ativo)
-        desenhar_campo_texto(tela, fonte, senha_input, texto_senha, senha_ativo)
+        desenhar_campo_texto(tela, fonte, senha_input, texto_senha, senha_ativo, ocultar=True)
 
         desenhar_botao(tela, botao_voltar, "Voltar", fonte, cores.VERMELHO_ESC)
         desenhar_botao(tela, botao_logar, "Entrar", fonte, cores.OURO)
