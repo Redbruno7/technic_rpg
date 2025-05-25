@@ -53,6 +53,10 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
     backspace_timer = 0
     BACKSPACE_DELAY = 100
+    k_left_timer = 0
+    K_LEFT_DELAY = 100
+    k_right_timer = 0
+    K_RIGHT_DELAY = 100
 
 
     def autenticar_usuario(email, senha):
@@ -78,15 +82,37 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
         teclas = pygame.key.get_pressed()
         tempo_atual = pygame.time.get_ticks()
 
+        # Evento contínuo BACKSPACE
         if teclas[pygame.K_BACKSPACE] and tempo_atual - backspace_timer > BACKSPACE_DELAY:
             if email_ativo and cursor_email > 0:
                 texto_email = texto_email[:cursor_email-1] + texto_email[cursor_email:]
                 cursor_email -= 1
+
             elif senha_ativo and cursor_senha > 0:
                 texto_senha = texto_senha[:cursor_senha-1] + texto_senha[cursor_senha:]
                 cursor_senha -= 1
 
             backspace_timer = tempo_atual
+
+        # Evento contínuo K-LEFT
+        if teclas[pygame.K_LEFT] and tempo_atual - k_left_timer > K_LEFT_DELAY:
+                if email_ativo and cursor_email > 0:
+                    cursor_email -= 1
+
+                elif senha_ativo and cursor_senha > 0:
+                    cursor_senha -= 1
+
+                k_left_timer = tempo_atual
+
+        # Evento contínuo K-RIGHT
+        if teclas[pygame.K_RIGHT] and tempo_atual - k_right_timer > K_RIGHT_DELAY:
+                if email_ativo and cursor_email > 0:
+                    cursor_email += 1
+                    
+                elif senha_ativo and cursor_senha > 0:
+                    cursor_senha += 1
+
+                k_right_timer = tempo_atual
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -128,6 +154,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
                 # Evento SETAS
                 elif event.key == pygame.K_LEFT:
+                    k_left_timer = pygame.time.get_ticks() - K_LEFT_DELAY
 
                     if email_ativo and cursor_email > 0:
                         cursor_email -= 1
@@ -136,6 +163,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
                         cursor_senha -= 1
 
                 elif event.key == pygame.K_RIGHT:
+                    k_right_timer = pygame.time.get_ticks() - K_RIGHT_DELAY
 
                     if email_ativo and cursor_email < len(texto_email):
                         cursor_email += 1
