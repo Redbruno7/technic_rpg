@@ -35,41 +35,24 @@ def desenhar_rotulo_campo(tela, fonte, campo, texto):
     tela.blit(rotulo, (campo.x, campo.y - 40))
 
 
-def desenhar_campo_texto(tela, fonte, campo, texto, ativo, ocultar=False):
-    """
-    Desenhar um campo de texto com o conteúdo digitado
+def desenhar_campo_texto(tela, fonte, retangulo, texto, ativo, cursor_index=0, ocultar=False):
+    cor_fundo = cores.BRANCO
+    cor_borda = cores.OURO
+    pygame.draw.rect(tela, cor_fundo, retangulo)
+    pygame.draw.rect(tela, cor_borda, retangulo, 2)
 
-    Args:
-        tela (pygame.Surface): Superfície onde será desenhado
-        fonte (pygame.font.Font): Fonte do texto
-        campo (pygame.Rect): Retângulo do campo de entrada
-        texto (str): Texto a ser exibido
-        ativo (bool): Indica se o campo está ativo (selecionado)
-    """
-    cor = cores.PRETO if ativo else cores.CINZA_CLARO
-    pygame.draw.rect(tela, cores.OURO, campo, 2)
+    if ocultar:
+        texto_render = fonte.render('*' * len(texto), True, (0, 0, 0))
+    else:
+        texto_render = fonte.render(texto, True, (0, 0, 0))
 
-    # Exibir asteriscos no campo de senha
-    texto_exibido = '*' * len(texto) if ocultar else texto
-    texto_render = fonte.render(texto_exibido, True, cor)
+    tela.blit(texto_render, (retangulo.x + 5, retangulo.y + 5))
 
-    # Posicionar texto
-    offset = max(0, texto_render.get_width() - (campo.width - 10))
-    pos_x = campo.x + 5 - offset
-    pos_y = campo.centery - texto_render.get_height() // 2
-
-    tela.set_clip(campo)
-    tela.blit(texto_render, (campo.x + 5 - offset, pos_y))
-    tela.set_clip(None)
-
-    # Efeito de campo ativo em digitação
     if ativo:
-        tempo = pygame.time.get_ticks()
-        if (tempo // 500) % 2 == 0:  # Pisca a cada ~500ms
-            cursor_x = pos_x + texto_render.get_width()
-            cursor_y_top = campo.y + 5
-            cursor_y_bottom = campo.y + campo.height - 5
-            pygame.draw.line(tela, cores.PRETO, (cursor_x, cursor_y_top), (cursor_x, cursor_y_bottom), 2)
+        cursor_x = retangulo.x + 5 + fonte.size(texto[:cursor_index])[0]
+        cursor_y = retangulo.y + 5
+        cursor_altura = fonte.get_height()
+        pygame.draw.line(tela, (0, 0, 0), (cursor_x, cursor_y), (cursor_x, cursor_y + cursor_altura))
 
 
 def verificar_campo_ativo_login(pos, campo_email, campo_senha):
@@ -127,92 +110,161 @@ def desenhar_botao(tela, rect, texto, fonte, cor_fundo):
     tela.blit(texto_render, texto_rect)
 
 
-def processar_digito_login(event, email_ativo, senha_ativo, texto_email, texto_senha):
+def processar_digito_login(event, email_ativo, senha_ativo, texto_email, pos_cursor_email, pos_cursor_senha):
     """
-    Processar a digitação do teclado nos campos de texto
+    Processa digitação, incluindo movimentação do cursor com setas esquerda e direita
+    e edição do texto nos campos ativos.
 
     Args:
         event (pygame.Event): Evento de tecla pressionada
-        email_ativo (bool): Indica se o campo de e-mail está ativo
-        senha_ativo (bool): Indica se o campo de senha está ativo
-        texto_email (str): Texto atual no campo de e-mail
-        texto_senha (str): Texto atual no campo de senha
+        *_ativo (bool): Flags indicando qual campo está ativo
+        texto_* (str): Texto atual dos campos
+        pos_cursor_* (int): Posição atual do cursor nos textos
 
     Returns:
-        tuple: Texto atualizado dos campos de e-mail e senha
+        tuple: (texto_nome, texto_cpf, texto_email, texto_senha,
+                pos_cursor_nome, pos_cursor_cpf, pos_cursor_email, pos_cursor_senha)
     """
+
+    def inserir_char(texto, pos, char):
+        return texto[:pos] + char + texto[pos:], pos + 1
+
+    def apagar_char(texto, pos):
+        if pos > 0:
+            texto = texto[:pos-1] + texto[pos:]
+            pos -= 1
+        return texto, pos
+
+    def mover_cursor_esquerda(pos):
+        return max(0, pos - 1)
+
+    def mover_cursor_direita(pos, texto):
+        return min(len(texto), pos + 1)
+
     if email_ativo:
         if event.key == pygame.K_BACKSPACE:
-            texto_email = texto_email[:-1]
+            texto_email, pos_cursor_email = apagar_char(texto_email, pos_cursor_email)
+
+        elif event.key == pygame.K_LEFT:
+            pos_cursor_email = mover_cursor_esquerda(pos_cursor_email)
+
+        elif event.key == pygame.K_RIGHT:
+            pos_cursor_email = mover_cursor_direita(pos_cursor_email, texto_email)
 
         else:
-            texto_email += event.unicode
+            texto_email, pos_cursor_email = inserir_char(texto_email, pos_cursor_email, event.unicode)
 
     elif senha_ativo:
         if event.key == pygame.K_BACKSPACE:
-            texto_senha = texto_senha[:-1]
+            texto_senha, pos_cursor_senha = apagar_char(texto_senha, pos_cursor_senha)
+            
+        elif event.key == pygame.K_LEFT:
+            pos_cursor_senha = mover_cursor_esquerda(pos_cursor_senha)
 
+        elif event.key == pygame.K_RIGHT:
+            pos_cursor_senha = mover_cursor_direita(pos_cursor_senha, texto_senha)
+            
         else:
-            texto_senha += event.unicode
+            texto_senha, pos_cursor_senha = inserir_char(texto_senha, pos_cursor_senha, event.unicode)
 
-    return texto_email, texto_senha
+    return (texto_email, texto_senha, pos_cursor_email, pos_cursor_senha)
 
 
-def processar_digito_registro(event, nome_ativo, cpf_ativo, email_ativo, senha_ativo, texto_nome, texto_cpf, texto_email, texto_senha):
+def processar_digito_registro(event, nome_ativo, cpf_ativo, email_ativo, senha_ativo,
+                             texto_nome, texto_cpf, texto_email, texto_senha,
+                             pos_cursor_nome, pos_cursor_cpf, pos_cursor_email, pos_cursor_senha):
     """
-    Processar a digitação do teclado nos campos de texto
+    Processa digitação, incluindo movimentação do cursor com setas esquerda e direita
+    e edição do texto nos campos ativos.
 
     Args:
         event (pygame.Event): Evento de tecla pressionada
-        email_ativo (bool): Indica se o campo de e-mail está ativo
-        senha_ativo (bool): Indica se o campo de senha está ativo
-        texto_email (str): Texto atual no campo de e-mail
-        texto_senha (str): Texto atual no campo de senha
+        *_ativo (bool): Flags indicando qual campo está ativo
+        texto_* (str): Texto atual dos campos
+        pos_cursor_* (int): Posição atual do cursor nos textos
 
     Returns:
-        tuple: Texto atualizado dos campos de e-mail e senha
+        tuple: (texto_nome, texto_cpf, texto_email, texto_senha,
+                pos_cursor_nome, pos_cursor_cpf, pos_cursor_email, pos_cursor_senha)
     """
+
+    def inserir_char(texto, pos, char):
+        return texto[:pos] + char + texto[pos:], pos + 1
+
+    def apagar_char(texto, pos):
+        if pos > 0:
+            texto = texto[:pos-1] + texto[pos:]
+            pos -= 1
+        return texto, pos
+
+    def mover_cursor_esquerda(pos):
+        return max(0, pos - 1)
+
+    def mover_cursor_direita(pos, texto):
+        return min(len(texto), pos + 1)
+
     if nome_ativo:
         if event.key == pygame.K_BACKSPACE:
-            texto_nome = texto_nome[:-1]
-
+            texto_nome, pos_cursor_nome = apagar_char(texto_nome, pos_cursor_nome)
+        elif event.key == pygame.K_LEFT:
+            pos_cursor_nome = mover_cursor_esquerda(pos_cursor_nome)
+        elif event.key == pygame.K_RIGHT:
+            pos_cursor_nome = mover_cursor_direita(pos_cursor_nome, texto_nome)
         else:
-            texto_nome += event.unicode
+            texto_nome, pos_cursor_nome = inserir_char(texto_nome, pos_cursor_nome, event.unicode)
 
-    if cpf_ativo:
+    elif cpf_ativo:
         if event.key == pygame.K_BACKSPACE:
-            texto_cpf = texto_cpf[:-1]
-            texto_cpf = ''.join(filter(str.isdigit, texto_cpf))
-
-        elif event.unicode.isdigit() and len(
-            texto_cpf.replace('.', '').replace('-', '')) < 11:
-            texto_cpf += event.unicode
+            texto_cpf, pos_cursor_cpf = apagar_char(texto_cpf, pos_cursor_cpf)
+            # Remover caracteres não numéricos e ajustar formatação após apagar
             numeros = ''.join(filter(str.isdigit, texto_cpf))
-
             if len(numeros) <= 3:
                 texto_cpf = numeros
-
             elif len(numeros) <= 6:
                 texto_cpf = f"{numeros[:3]}.{numeros[3:]}"
-
             elif len(numeros) <= 9:
                 texto_cpf = f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:]}"
-
             else:
                 texto_cpf = f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:9]}-{numeros[9:]}"
+            pos_cursor_cpf = min(pos_cursor_cpf, len(texto_cpf))  # Ajusta cursor se necessário
+        elif event.key == pygame.K_LEFT:
+            pos_cursor_cpf = mover_cursor_esquerda(pos_cursor_cpf)
+        elif event.key == pygame.K_RIGHT:
+            pos_cursor_cpf = mover_cursor_direita(pos_cursor_cpf, texto_cpf)
+        elif event.unicode.isdigit() and len(''.join(filter(str.isdigit, texto_cpf))) < 11:
+            # Insere o dígito na posição do cursor
+            texto_cpf, pos_cursor_cpf = inserir_char(texto_cpf, pos_cursor_cpf, event.unicode)
+            # Reformatar o texto
+            numeros = ''.join(filter(str.isdigit, texto_cpf))
+            if len(numeros) <= 3:
+                texto_cpf = numeros
+            elif len(numeros) <= 6:
+                texto_cpf = f"{numeros[:3]}.{numeros[3:]}"
+            elif len(numeros) <= 9:
+                texto_cpf = f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:]}"
+            else:
+                texto_cpf = f"{numeros[:3]}.{numeros[3:6]}.{numeros[6:9]}-{numeros[9:]}"
+            pos_cursor_cpf = min(pos_cursor_cpf, len(texto_cpf))
 
     elif email_ativo:
         if event.key == pygame.K_BACKSPACE:
-            texto_email = texto_email[:-1]
-
+            texto_email, pos_cursor_email = apagar_char(texto_email, pos_cursor_email)
+        elif event.key == pygame.K_LEFT:
+            pos_cursor_email = mover_cursor_esquerda(pos_cursor_email)
+        elif event.key == pygame.K_RIGHT:
+            pos_cursor_email = mover_cursor_direita(pos_cursor_email, texto_email)
         else:
-            texto_email += event.unicode
+            texto_email, pos_cursor_email = inserir_char(texto_email, pos_cursor_email, event.unicode)
 
     elif senha_ativo:
         if event.key == pygame.K_BACKSPACE:
-            texto_senha = texto_senha[:-1]
-
+            texto_senha, pos_cursor_senha = apagar_char(texto_senha, pos_cursor_senha)
+        elif event.key == pygame.K_LEFT:
+            pos_cursor_senha = mover_cursor_esquerda(pos_cursor_senha)
+        elif event.key == pygame.K_RIGHT:
+            pos_cursor_senha = mover_cursor_direita(pos_cursor_senha, texto_senha)
         else:
-            texto_senha += event.unicode
+            texto_senha, pos_cursor_senha = inserir_char(texto_senha, pos_cursor_senha, event.unicode)
 
-    return texto_nome, texto_cpf, texto_email, texto_senha
+    return (texto_nome, texto_cpf, texto_email, texto_senha,
+            pos_cursor_nome, pos_cursor_cpf, pos_cursor_email, pos_cursor_senha)
