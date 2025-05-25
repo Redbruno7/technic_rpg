@@ -1,7 +1,6 @@
 O QUE FALTA
 
 + Funções formulário
-    º Visual piscante do campo de texto
     º Seleção dentro do campo de texto a partir de clique do cursor
     º Enter para entrar / registrar
 

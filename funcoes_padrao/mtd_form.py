@@ -49,16 +49,27 @@ def desenhar_campo_texto(tela, fonte, campo, texto, ativo, ocultar=False):
     cor = cores.PRETO if ativo else cores.CINZA_CLARO
     pygame.draw.rect(tela, cores.OURO, campo, 2)
 
-    # Se for o campo de senha, mostra asteriscos no lugar do texto
+    # Exibir asteriscos no campo de senha
     texto_exibido = '*' * len(texto) if ocultar else texto
-
     texto_render = fonte.render(texto_exibido, True, cor)
+
+    # Posicionar texto
     offset = max(0, texto_render.get_width() - (campo.width - 10))
+    pos_x = campo.x + 5 - offset
     pos_y = campo.centery - texto_render.get_height() // 2
 
     tela.set_clip(campo)
     tela.blit(texto_render, (campo.x + 5 - offset, pos_y))
     tela.set_clip(None)
+
+    # Efeito de campo ativo em digitação
+    if ativo:
+        tempo = pygame.time.get_ticks()
+        if (tempo // 500) % 2 == 0:  # Pisca a cada ~500ms
+            cursor_x = pos_x + texto_render.get_width()
+            cursor_y_top = campo.y + 5
+            cursor_y_bottom = campo.y + campo.height - 5
+            pygame.draw.line(tela, cores.PRETO, (cursor_x, cursor_y_top), (cursor_x, cursor_y_bottom), 2)
 
 
 def verificar_campo_ativo_login(pos, campo_email, campo_senha):
