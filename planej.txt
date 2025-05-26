@@ -1,10 +1,14 @@
 O QUE FALTA
 
 + Funções formulário
-    º Enter para entrar / registrar
+    º ENTER para entrar / registrar
+    º DEL para deletar caractere da frente
+
++ tela_entrar
+    º Ajustar
 
 + Tela Logado
-    º Construir tela com base no usuário logado
+    º Construir tela com base no usuário logado / Com informações do registro
 
 + Design das telas:
     º Principal
