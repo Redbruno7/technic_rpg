@@ -15,18 +15,15 @@ pygame.init()
 os.system('cls')
 
 
-conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
+conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
 
+# Definir dimensão da tela
 largura = 1600
 altura = 800
 tela = pygame.display.set_mode((largura, altura))
 
 
-
-
 def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
-    fundo = pygame.image.load("imgs/fundo_geral.png")
-    fundo = pygame.transform.scale(fundo, (largura, altura))
     """
     Exibir a tela de login com campos de e-mail e senha, e botões "Entrar" e "Voltar"
 
@@ -44,9 +41,13 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
         - Botão "Entrar" leva à tela de logado
         - Botão "Voltar" retorna à tela principal
         - Atualiza o cursor dinamicamente conforme o elemento em foco
-    """
+    """    
     from interface.tela_principal import janela_principal
     from interface.tela_logado import tela_logar
+
+    # Carregar imagem de fundo
+    fundo = pygame.image.load("imgs/fundo_geral.png")
+    fundo = pygame.transform.scale(fundo, (largura, altura))
 
     # Definir posição dos campos e botões
     botao_logar = pygame.Rect(850, 400, 100, 50)

@@ -3,82 +3,77 @@ from funcoes_padrao import cores
 
 
 def atualizar_cursor(pos, campos, botoes):
-    """
-    Atualizar o cursor do mouse com base na posição atual
 
-    Args:
-        pos (tuple): Posição (x, y) atual do mouse
-        campos (list): Lista de retângulos representando os campos de texto
-        botoes (list): Lista de retângulos representando os botões
-    """
+    # Campos de texto
     if any(campo.collidepoint(pos) for campo in campos):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_IBEAM)
 
+    # Botões
     elif any(botao.collidepoint(pos) for botao in botoes):
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
 
+    # Padrão
     else:
         pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_ARROW)
 
 
 def desenhar_rotulo_campo(tela, fonte, campo, texto):
-    """
-    Desenhar um rótulo (título) acima de um campo de entrada
 
-    Args:
-        tela (pygame.Surface): Superfície onde será desenhado
-        fonte (pygame.font.Font): Fonte do texto
-        campo (pygame.Rect): Retângulo do campo de entrada
-        texto (str): Texto do rótulo
-    """
-    rotulo = fonte.render(texto, True, cores.PRETO)
+    # Título do campo
+    rotulo = fonte.render(texto, True, cores.AMARELO_OURO_VELHO)
     tela.blit(rotulo, (campo.x, campo.y - 40))
 
 
 def desenhar_campo_texto(tela, fonte, retangulo, texto, ativo, cursor_index=0, ocultar=False):
+
     # Cores
     cor_fundo = cores.BRANCO
-    cor_borda = cores.OURO
-    cor_texto = cores.PRETO  # Se tiver definido em cores.py
+    cor_borda = cores.AMARELO_OURO_VELHO
+    cor_texto = cores.PRETO
 
-    # Fundo e borda do campo
+    # Fundo e borda
     pygame.draw.rect(tela, cor_fundo, retangulo)
     pygame.draw.rect(tela, cor_borda, retangulo, 2)
 
-    # Aplicar ocultação se for senha
+    # Ocultar senha
     texto_visivel = '*' * len(texto) if ocultar else texto
 
     # Texto renderizado
     texto_render = fonte.render(texto_visivel, True, cor_texto)
-    tela.blit(texto_render, (retangulo.x + 5, retangulo.y + (retangulo.height - fonte.get_height()) // 2))
 
-    # Desenhar cursor se ativo
-    if ativo:
+    # Largura visível do campo
+    largura_maxima = retangulo.width - 10  # margem de 5px dos lados
 
-        # Corrigir índice se maior que o texto
-        cursor_index = min(cursor_index, len(texto))
+    # Coordenada X do cursor no texto completo
+    cursor_x_total = fonte.size(texto_visivel[:cursor_index])[0]
 
-        # Calcular posição x do cursor
-        cursor_x = retangulo.x + 5 + fonte.size(texto_visivel[:cursor_index])[0]
+    # Scroll horizontal (deslocamento do texto)
+    scroll_x = 0
+    if cursor_x_total > largura_maxima:
+        scroll_x = cursor_x_total - largura_maxima
+    elif cursor_x_total < scroll_x:
+        scroll_x = 0
+
+    # Criar uma "máscara" (clipping) para evitar que o texto vaze
+    tela.set_clip(retangulo)
+
+    # Desenhar o texto com scroll aplicado
+    tela.blit(texto_render, (retangulo.x + 5 - scroll_x, retangulo.y + (retangulo.height - fonte.get_height()) // 2))
+
+    # Restaurar clipping
+    tela.set_clip(None)
+
+    # Cursor piscante
+    if ativo and (pygame.time.get_ticks() // 500) % 2 == 0:
+        cursor_x = retangulo.x + 5 + cursor_x_total - scroll_x
         cursor_y = retangulo.y + (retangulo.height - fonte.get_height()) // 2
         cursor_altura = fonte.get_height()
-
-        # Cursor piscando
-        if (pygame.time.get_ticks() // 500) % 2 == 0:  # Pisca a cada ~0,5s
-            pygame.draw.line(tela, cor_texto, (cursor_x, cursor_y), (cursor_x, cursor_y + cursor_altura))
+        pygame.draw.line(tela, cor_texto, (cursor_x, cursor_y), (cursor_x, cursor_y + cursor_altura))
 
 
 def desenhar_botao(tela, rect, texto, fonte, cor_fundo):
-    """
-    Desenhar um botão com texto centralizado
 
-    Args:
-        tela (pygame.Surface): Superfície onde será desenhado
-        rect (pygame.Rect): Retângulo do botão
-        texto (str): Texto do botão
-        fonte (pygame.font.Font): Fonte do texto
-        cor_fundo (tuple): Cor de fundo do botão
-    """
+    # Desenhar botões
     pygame.draw.rect(tela, cor_fundo, rect)
     texto_render = fonte.render(texto, True, cores.PRETO)
     texto_rect = texto_render.get_rect(center=rect.center)
@@ -86,17 +81,8 @@ def desenhar_botao(tela, rect, texto, fonte, cor_fundo):
 
 
 def verificar_campo_ativo_login(pos, campo_email, campo_senha):
-    """
-    Verificar se o usuário clicou em um dos campos de entrada (e-mail ou senha)
 
-    Args:
-        pos (tuple): Posição (x, y) do clique do mouse
-        campo_email (pygame.Rect): Retângulo do campo de e-mail
-        campo_senha (pygame.Rect): Retângulo do campo de senha
-
-    Returns:
-        tuple: Dois valores booleanos indicando se o campo de e-mail ou senha foi ativado
-    """
+    # Verificar campo ativo - Login
     email_ativo = campo_email.collidepoint(pos)
     senha_ativo = campo_senha.collidepoint(pos)
 
@@ -104,17 +90,8 @@ def verificar_campo_ativo_login(pos, campo_email, campo_senha):
 
 
 def verificar_campo_ativo_registro(pos, campo_nome, campo_cpf, campo_email, campo_senha):
-    """
-    Verificar se o usuário clicou em um dos campos de entrada (e-mail ou senha)
 
-    Args:
-        pos (tuple): Posição (x, y) do clique do mouse
-        campo_email (pygame.Rect): Retângulo do campo de e-mail
-        campo_senha (pygame.Rect): Retângulo do campo de senha
-
-    Returns:
-        tuple: Dois valores booleanos indicando se o campo de e-mail ou senha foi ativado
-    """
+    # Verificar campo ativo - Registro
     nome_ativo = campo_nome.collidepoint(pos)
     cpf_ativo = campo_cpf.collidepoint(pos)
     email_ativo = campo_email.collidepoint(pos)
@@ -123,68 +100,53 @@ def verificar_campo_ativo_registro(pos, campo_nome, campo_cpf, campo_email, camp
     return nome_ativo, cpf_ativo, email_ativo, senha_ativo
 
 
-def processar_digito_login(event, email_ativo, senha_ativo, texto_email, pos_cursor_email, pos_cursor_senha):
-    """
-    Processa digitação, incluindo movimentação do cursor com setas esquerda e direita
-    e edição do texto nos campos ativos.
+def processar_digito_login(event, email_ativo, senha_ativo, texto_email, texto_senha, pos_cursor_email, pos_cursor_senha):
 
-    Args:
-        event (pygame.Event): Evento de tecla pressionada
-        *_ativo (bool): Flags indicando qual campo está ativo
-        texto_* (str): Texto atual dos campos
-        pos_cursor_* (int): Posição atual do cursor nos textos
-
-    Returns:
-        tuple: (texto_nome, texto_cpf, texto_email, texto_senha,
-                pos_cursor_nome, pos_cursor_cpf, pos_cursor_email, pos_cursor_senha)
-    """
-
-    def inserir_char(texto, pos, char):
-        return texto[:pos] + char + texto[pos:], pos + 1
-
-    def apagar_char(texto, pos):
-        if pos > 0:
-            texto = texto[:pos-1] + texto[pos:]
-            pos -= 1
-        return texto, pos
-
-    def mover_cursor_esquerda(pos):
-        return max(0, pos - 1)
-
-    def mover_cursor_direita(pos, texto):
-        return min(len(texto), pos + 1)
-
+    # Email
     if email_ativo:
-        if event.key == pygame.K_BACKSPACE:
-            texto_email, pos_cursor_email = apagar_char(
-                texto_email, pos_cursor_email)
 
-        elif event.key == pygame.K_LEFT:
-            pos_cursor_email = mover_cursor_esquerda(pos_cursor_email)
+        # BACKSPACE
+        if event.key == pygame.K_BACKSPACE and pos_cursor_email > 0:
+            texto_email = texto_email[:pos_cursor_email -
+                                      1] + texto_email[pos_cursor_email:]
+            pos_cursor_email -= 1
 
-        elif event.key == pygame.K_RIGHT:
-            pos_cursor_email = mover_cursor_direita(
-                pos_cursor_email, texto_email)
+        # K-LEFT
+        elif event.key == pygame.K_LEFT and pos_cursor_email > 0:
+            pos_cursor_email -= 1
 
-        else:
-            texto_email, pos_cursor_email = inserir_char(
-                texto_email, pos_cursor_email, event.unicode)
+        # K-RIGHT
+        elif event.key == pygame.K_RIGHT and pos_cursor_email < len(texto_email):
+            pos_cursor_email += 1
 
+        # DEFAULT
+        elif len(event.unicode) > 0 and event.unicode.isprintable():
+            texto_email = texto_email[:pos_cursor_email] + \
+                event.unicode + texto_email[pos_cursor_email:]
+            pos_cursor_email += len(event.unicode)
+
+    # Senha
     elif senha_ativo:
-        if event.key == pygame.K_BACKSPACE:
-            texto_senha, pos_cursor_senha = apagar_char(
-                texto_senha, pos_cursor_senha)
 
-        elif event.key == pygame.K_LEFT:
-            pos_cursor_senha = mover_cursor_esquerda(pos_cursor_senha)
+        # BACKSPACE
+        if event.key == pygame.K_BACKSPACE and pos_cursor_senha > 0:
+            texto_senha = texto_senha[:pos_cursor_senha -
+                                      1] + texto_senha[pos_cursor_senha:]
+            pos_cursor_senha -= 1
 
-        elif event.key == pygame.K_RIGHT:
-            pos_cursor_senha = mover_cursor_direita(
-                pos_cursor_senha, texto_senha)
+        # K-LEFT
+        elif event.key == pygame.K_LEFT and pos_cursor_senha > 0:
+            pos_cursor_senha -= 1
 
-        else:
-            texto_senha, pos_cursor_senha = inserir_char(
-                texto_senha, pos_cursor_senha, event.unicode)
+        # K-RIGHT
+        elif event.key == pygame.K_RIGHT and pos_cursor_senha < len(texto_senha):
+            pos_cursor_senha += 1
+
+        # DEFAULT
+        elif len(event.unicode) > 0 and event.unicode.isprintable():
+            texto_senha = texto_senha[:pos_cursor_senha] + \
+                event.unicode + texto_senha[pos_cursor_senha:]
+            pos_cursor_senha += len(event.unicode)
 
     return (texto_email, texto_senha, pos_cursor_email, pos_cursor_senha)
 
@@ -192,76 +154,97 @@ def processar_digito_login(event, email_ativo, senha_ativo, texto_email, pos_cur
 def processar_digito_registro(event, nome_ativo, cpf_ativo, email_ativo, senha_ativo,
                               texto_nome, texto_cpf, texto_email, texto_senha,
                               pos_cursor_nome, pos_cursor_cpf, pos_cursor_email, pos_cursor_senha):
-    """
-    Processa a digitação nos campos de texto do formulário de registro, com suporte a cursor e formatação.
 
-    Returns:
-        tuple: textos atualizados e posições dos cursores
-    """
-    import re
-
-    # NOME
+    # Nome
     if nome_ativo:
+
+        # BACKSPACE
         if event.key == pygame.K_BACKSPACE and pos_cursor_nome > 0:
-            texto_nome = texto_nome[:pos_cursor_nome - 1] + texto_nome[pos_cursor_nome:]
+            texto_nome = texto_nome[:pos_cursor_nome -
+                                    1] + texto_nome[pos_cursor_nome:]
             pos_cursor_nome -= 1
 
+        # K-LEFT
         elif event.key == pygame.K_LEFT and pos_cursor_nome > 0:
             pos_cursor_nome -= 1
 
+        # K_RIGHT
         elif event.key == pygame.K_RIGHT and pos_cursor_nome < len(texto_nome):
             pos_cursor_nome += 1
 
+        # DEFAULT
         elif len(event.unicode) > 0 and event.unicode.isprintable():
-            texto_nome = texto_nome[:pos_cursor_nome] + event.unicode + texto_nome[pos_cursor_nome:]
+            texto_nome = texto_nome[:pos_cursor_nome] + \
+                event.unicode + texto_nome[pos_cursor_nome:]
             pos_cursor_nome += len(event.unicode)
 
     # CPF
     elif cpf_ativo:
+
+        # BACKSPACE
         if event.key == pygame.K_BACKSPACE and pos_cursor_cpf > 0:
-            texto_cpf = texto_cpf[:pos_cursor_cpf - 1] + texto_cpf[pos_cursor_cpf:]
+            texto_cpf = texto_cpf[:pos_cursor_cpf - 1] + \
+                texto_cpf[pos_cursor_cpf:]
             pos_cursor_cpf -= 1
 
+        # K_LEFT
         elif event.key == pygame.K_LEFT and pos_cursor_cpf > 0:
             pos_cursor_cpf -= 1
 
+        # K-RIGHT
         elif event.key == pygame.K_RIGHT and pos_cursor_cpf < len(texto_cpf):
             pos_cursor_cpf += 1
 
+        # DEFAULT
         elif event.unicode.isdigit() and len(texto_cpf) < 11:
-            texto_cpf = texto_cpf[:pos_cursor_cpf] + event.unicode + texto_cpf[pos_cursor_cpf:]
+            texto_cpf = texto_cpf[:pos_cursor_cpf] + \
+                event.unicode + texto_cpf[pos_cursor_cpf:]
             pos_cursor_cpf += 1
 
-    # EMAIL
+    # Email
     elif email_ativo:
+
+        # BACKSPACE
         if event.key == pygame.K_BACKSPACE and pos_cursor_email > 0:
-            texto_email = texto_email[:pos_cursor_email - 1] + texto_email[pos_cursor_email:]
+            texto_email = texto_email[:pos_cursor_email -
+                                      1] + texto_email[pos_cursor_email:]
             pos_cursor_email -= 1
 
+        # K-LEFT
         elif event.key == pygame.K_LEFT and pos_cursor_email > 0:
             pos_cursor_email -= 1
 
+        # K-RIGHT
         elif event.key == pygame.K_RIGHT and pos_cursor_email < len(texto_email):
             pos_cursor_email += 1
 
+        # DEFAULT
         elif len(event.unicode) > 0 and event.unicode.isprintable():
-            texto_email = texto_email[:pos_cursor_email] + event.unicode + texto_email[pos_cursor_email:]
+            texto_email = texto_email[:pos_cursor_email] + \
+                event.unicode + texto_email[pos_cursor_email:]
             pos_cursor_email += len(event.unicode)
 
-    # SENHA
+    # Senha
     elif senha_ativo:
+
+        # BACKSPACE
         if event.key == pygame.K_BACKSPACE and pos_cursor_senha > 0:
-            texto_senha = texto_senha[:pos_cursor_senha - 1] + texto_senha[pos_cursor_senha:]
+            texto_senha = texto_senha[:pos_cursor_senha -
+                                      1] + texto_senha[pos_cursor_senha:]
             pos_cursor_senha -= 1
 
+        # K-LEFT
         elif event.key == pygame.K_LEFT and pos_cursor_senha > 0:
             pos_cursor_senha -= 1
 
+        # K-RIGHT
         elif event.key == pygame.K_RIGHT and pos_cursor_senha < len(texto_senha):
             pos_cursor_senha += 1
 
+        # DEFAULT
         elif len(event.unicode) > 0 and event.unicode.isprintable():
-            texto_senha = texto_senha[:pos_cursor_senha] + event.unicode + texto_senha[pos_cursor_senha:]
+            texto_senha = texto_senha[:pos_cursor_senha] + \
+                event.unicode + texto_senha[pos_cursor_senha:]
             pos_cursor_senha += len(event.unicode)
 
     return (texto_nome, texto_cpf, texto_email, texto_senha,

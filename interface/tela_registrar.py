@@ -18,12 +18,22 @@ os.system('cls')
 fonte = pygame.font.SysFont('Unicode', 40)
 
 # Conectar Banco de dados
-conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
+conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
 cursor = conn.cursor()
 
 
-def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
+# Definir dimensão da tela
+largura = 1600
+altura = 800
+tela = pygame.display.set_mode((largura, altura))
+
+
+def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
     from interface.tela_principal import janela_principal
+
+    # Carregar imagem de fundo
+    fundo = pygame.image.load("imgs/fundo_geral.png")
+    fundo = pygame.transform.scale(fundo, (largura, altura))
 
     # Definir posição dos campos e botões
     botao_voltar = pygame.Rect(620, 600, 130, 50)
@@ -172,7 +182,8 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
                         cursor_nome, cursor_cpf, cursor_email, cursor_senha
                     )
 
-        tela.fill(cores.BRANCO)
+            # Setar tela de fundo
+            tela.blit(fundo, (0, 0))
 
         # Método - Título campo
         desenhar_rotulo_campo(tela, fonte, nome_input, "Nome")

@@ -36,3 +36,6 @@ BEGE           = (245, 245, 220)
 
 CIANO          = (0, 255, 255)
 MAGENTA        = (255, 0, 255)
+
+AMARELO_OURO_VELHO    = (187, 153, 45)
+SANGUE_SECO           = (99, 0, 25)

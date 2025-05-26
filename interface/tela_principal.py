@@ -93,7 +93,7 @@ def janela_principal(tela, largura, altura, fonte, botoes, cursores):
                 # Botão Registrar
                 if botao_registrar.collidepoint(event.pos):
                     return tela_registrar.tela_registrar(
-                        tela, largura, altura, fonte, botoes, cursores, fundo)
+                        tela, largura, altura, fonte, botoes, cursores)
                 
                 # Botão Sair
                 if botao_sair.collidepoint(event.pos):
