@@ -176,8 +176,8 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
                         cursor_nome, cursor_cpf, cursor_email, cursor_senha
                     )
 
-            # Setar tela de fundo
-            tela.blit(fundo, (0, 0))
+        # Setar tela de fundo
+        tela.blit(fundo, (0, 0))
 
         # Método - Título campo
         desenhar_rotulo_campo(tela, fonte, nome_input, "Nome")

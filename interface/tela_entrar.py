@@ -146,8 +146,8 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
                         event, email_ativo, senha_ativo, texto_email, texto_senha, cursor_email, cursor_senha
                     )
 
-
-            tela.blit(fundo, (0, 0))
+        # Setar tela de fundo
+        tela.blit(fundo, (0, 0))
 
         # Método - Desenhar título
         desenhar_rotulo_campo(tela, fonte, email_input, "Email")
