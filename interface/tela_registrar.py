@@ -235,6 +235,11 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
                     else:
                         nome_ativo = True
 
+                # ENTER
+                elif event.key == pygame.K_RETURN:
+                    if registrar_usuario():
+                        return janela_principal(tela, largura, altura, fonte, botoes, cursores)
+
                 # Processa digitação, backspace e setas
                 else:
                     (texto_nome, texto_cpf, texto_email, texto_senha,
@@ -264,8 +269,8 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
                              senha_ativo, cursor_index=cursor_senha, ocultar=True)
 
         # Método - Definir botões
-        desenhar_botao(tela, botao_voltar, "Voltar", fonte, cores.VERMELHO_ESC)
-        desenhar_botao(tela, botao_registrar, "Registrar", fonte, cores.OURO)
+        desenhar_botao(tela, botao_voltar, "Voltar", fonte, cores.SANGUE_SECO)
+        desenhar_botao(tela, botao_registrar, "Registrar", fonte, cores.AMARELO_OURO_VELHO)
 
         if mensagem_erro:
             fonte_erro = pygame.font.SysFont('UNICODE', 40)

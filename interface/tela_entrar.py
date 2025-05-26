@@ -181,6 +181,13 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
                     else:
                         email_ativo = True
 
+                # ENTER
+                elif event.key == pygame.K_RETURN:
+                    if autenticar_usuario(texto_email, texto_senha):
+                        return tela_logar(tela, largura, altura, fonte, botoes, cursores)
+                    else:
+                        mensagem_erro = "Email e/ou Senha incorretos."
+
                 # Processa digitação, backspace e setas
                 else:
                     (texto_email, texto_senha, cursor_email, cursor_senha) = processar_digito_login(
@@ -201,8 +208,8 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
                              senha_ativo, cursor_index=cursor_senha, ocultar=True)
 
         # Método - Desenhar botões
-        desenhar_botao(tela, botao_voltar, "Voltar", fonte, cores.VERMELHO_ESC)
-        desenhar_botao(tela, botao_logar, "Entrar", fonte, cores.OURO)
+        desenhar_botao(tela, botao_voltar, "Voltar", fonte, cores.SANGUE_SECO)
+        desenhar_botao(tela, botao_logar, "Entrar", fonte, cores.AMARELO_OURO_VELHO)
 
         # Desenhar mensagem de erro
         if mensagem_erro:

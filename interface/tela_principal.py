@@ -101,8 +101,8 @@ def janela_principal(tela, largura, altura, fonte, botoes, cursores):
                     sys.exit()
 
         # Invocar método - Desenhar botão
-        desenhar_botao(tela, botao_entrar, "Entrar", fonte, cores.OURO)
-        desenhar_botao(tela, botao_registrar, "Registrar", fonte, cores.OURO)
-        desenhar_botao(tela, botao_sair, "Sair", fonte, cores.VERMELHO_ESC)
+        desenhar_botao(tela, botao_entrar, "Entrar", fonte, cores.AMARELO_OURO_VELHO)
+        desenhar_botao(tela, botao_registrar, "Registrar", fonte, cores.AMARELO_OURO_VELHO)
+        desenhar_botao(tela, botao_sair, "Sair", fonte, cores.SANGUE_SECO)
 
         pygame.display.update()

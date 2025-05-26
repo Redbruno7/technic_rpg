@@ -27,7 +27,7 @@ def desenhar_rotulo_campo(tela, fonte, campo, texto):
 def desenhar_campo_texto(tela, fonte, retangulo, texto, ativo, cursor_index=0, ocultar=False):
 
     # Cores
-    cor_fundo = cores.BRANCO
+    cor_fundo = cores.CINZA_MUITO_CLARO
     cor_borda = cores.AMARELO_OURO_VELHO
     cor_texto = cores.PRETO
 
