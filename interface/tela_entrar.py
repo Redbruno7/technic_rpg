@@ -23,25 +23,7 @@ altura = 800
 tela = pygame.display.set_mode((largura, altura))
 
 
-def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
-    """
-    Exibir a tela de login com campos de e-mail e senha, e botões "Entrar" e "Voltar"
-
-    Args:
-        tela (pygame.Surface): Superfície principal da janela
-        largura (int): Largura da janela
-        altura (int): Altura da janela
-        fonte (pygame.font.Font): Fonte padrão usada no layout
-        botoes (list): Lista de botões (não usados diretamente aqui)
-        cursores (dict): Cursores personalizados (não usados diretamente aqui)
-        fundo (pygame.Surface): Imagem ou superfície de fundo (não usada diretamente aqui)
-
-    Comportamento:
-        - Permite digitação nos campos
-        - Botão "Entrar" leva à tela de logado
-        - Botão "Voltar" retorna à tela principal
-        - Atualiza o cursor dinamicamente conforme o elemento em foco
-    """    
+def tela_entrar(tela, largura, altura, fonte, botoes, cursores):   
     from interface.tela_principal import janela_principal
     from interface.tela_logado import tela_logar
 
@@ -64,10 +46,6 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
     # Definir temporizadores para funções de tecla
     backspace_timer = 0
     BACKSPACE_DELAY = 100
-    k_left_timer = 0
-    K_LEFT_DELAY = 100
-    k_right_timer = 0
-    K_RIGHT_DELAY = 100
 
     # Definir método de autenticação de usuário
     def autenticar_usuario(email, senha):
@@ -119,26 +97,6 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
 
             backspace_timer = tempo_atual
 
-        # Definir evento contínuo K-LEFT
-        if teclas[pygame.K_LEFT] and tempo_atual - k_left_timer > K_LEFT_DELAY:
-            if email_ativo and cursor_email > 0:
-                cursor_email -= 1
-
-            elif senha_ativo and cursor_senha > 0:
-                cursor_senha -= 1
-
-            k_left_timer = tempo_atual
-
-        # Definir evento contínuo K-RIGHT
-        if teclas[pygame.K_RIGHT] and tempo_atual - k_right_timer > K_RIGHT_DELAY:
-            if email_ativo and cursor_email > 0:
-                cursor_email += 1
-
-            elif senha_ativo and cursor_senha > 0:
-                cursor_senha += 1
-
-            k_right_timer = tempo_atual
-
         # Definir eventos de interação
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -182,38 +140,12 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
                     else:
                         email_ativo = True
 
-                # Evento seta esquerda
-                elif event.key == pygame.K_LEFT:
-                    k_left_timer = pygame.time.get_ticks() - K_LEFT_DELAY
-
-                    if email_ativo and cursor_email > 0:
-                        cursor_email -= 1
-
-                    elif senha_ativo and cursor_senha > 0:
-                        cursor_senha -= 1
-
-                # Evento seta direita
-                elif event.key == pygame.K_RIGHT:
-                    k_right_timer = pygame.time.get_ticks() - K_RIGHT_DELAY
-
-                    if email_ativo and cursor_email < len(texto_email):
-                        cursor_email += 1
-
-                    elif senha_ativo and cursor_senha < len(texto_senha):
-                        cursor_senha += 1
-
+                # Processa digitação, backspace e setas
                 else:
-                    char = event.unicode
+                    (texto_email, texto_senha, cursor_email, cursor_senha) = processar_digito_login(
+                        event, email_ativo, senha_ativo, texto_email, texto_senha, cursor_email, cursor_senha
+                    )
 
-                    if email_ativo:
-                        texto_email = texto_email[:cursor_email] + \
-                            char + texto_email[cursor_email:]
-                        cursor_email += 1
-
-                    elif senha_ativo:
-                        texto_senha = texto_senha[:cursor_senha] + \
-                            char + texto_senha[cursor_senha:]
-                        cursor_senha += 1
 
             tela.blit(fundo, (0, 0))
 
@@ -221,13 +153,13 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
         desenhar_rotulo_campo(tela, fonte, email_input, "Email")
         desenhar_rotulo_campo(tela, fonte, senha_input, "Senha")
 
-        # Método - Preencher campo de texto
+        # Método - Preencher campo
         desenhar_campo_texto(tela, fonte, email_input,
                              texto_email, email_ativo, cursor_index=cursor_email)
         desenhar_campo_texto(tela, fonte, senha_input, texto_senha,
                              senha_ativo, cursor_index=cursor_senha, ocultar=True)
 
-        # Método - Desenhar botão
+        # Método - Desenhar botões
         desenhar_botao(tela, botao_voltar, "Voltar", fonte, cores.VERMELHO_ESC)
         desenhar_botao(tela, botao_logar, "Entrar", fonte, cores.OURO)
 
@@ -235,7 +167,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
         if mensagem_erro:
             fonte_erro = pygame.font.SysFont('Unicode', 40)
             texto_erro = fonte_erro.render(
-                mensagem_erro, True, cores.VERMELHO_ESC)
+                mensagem_erro, True, cores.BEGE)
             tela.blit(texto_erro, (610, 500))
 
         pygame.display.update()

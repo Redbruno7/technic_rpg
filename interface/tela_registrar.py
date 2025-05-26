@@ -14,9 +14,6 @@ from funcoes_padrao.mtd_form import processar_digito_registro
 pygame.init()
 os.system('cls')
 
-# Definir Fonte
-fonte = pygame.font.SysFont('Unicode', 40)
-
 # Conectar Banco de dados
 conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
 cursor = conn.cursor()
@@ -141,9 +138,6 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
                 if botao_registrar.collidepoint(event.pos):
                     if registrar_usuario():
                         return janela_principal(tela, largura, altura, fonte, botoes, cursores)
-                    
-                    else:
-                        mensagem_erro = "Preencha todos os campos"
 
                 # Invocar método - Verificar campo ativo
                 nome_ativo, cpf_ativo, email_ativo, senha_ativo = verificar_campo_ativo_registro(
@@ -208,7 +202,7 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
         if mensagem_erro:
             fonte_erro = pygame.font.SysFont('UNICODE', 40)
             texto_erro = fonte_erro.render(
-                mensagem_erro, True, cores.VERMELHO_ESC)
+                mensagem_erro, True, cores.BEGE)
             erro_rect = texto_erro.get_rect(center=(largura // 2, 700))
             tela.blit(texto_erro, erro_rect)
 
