@@ -118,36 +118,28 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
             backspace_timer = tempo_atual
 
-        # Definir evento contínuo K-LEFT
+        # K-LEFT
         if teclas[pygame.K_LEFT] and tempo_atual - k_left_timer > K_LEFT_DELAY:
             if nome_ativo and cursor_nome > 0:
                 cursor_nome -= 1
-
             elif cpf_ativo and cursor_cpf > 0:
                 cursor_cpf -= 1
-
             elif email_ativo and cursor_email > 0:
                 cursor_email -= 1
-
             elif senha_ativo and cursor_senha > 0:
                 cursor_senha -= 1
-
             k_left_timer = tempo_atual
 
-        # Definir evento contínuo K-RIGHT
+        # K-RIGHT
         if teclas[pygame.K_RIGHT] and tempo_atual - k_right_timer > K_RIGHT_DELAY:
-            if nome_ativo and cursor_nome > 0:
+            if nome_ativo and cursor_nome < len(texto_nome):
                 cursor_nome += 1
-
-            elif cpf_ativo and cursor_cpf > 0:
+            elif cpf_ativo and cursor_cpf < len(texto_cpf):
                 cursor_cpf += 1
-
-            if email_ativo and cursor_email > 0:
+            elif email_ativo and cursor_email < len(texto_email):
                 cursor_email += 1
-
-            elif senha_ativo and cursor_senha > 0:
+            elif senha_ativo and cursor_senha < len(texto_senha):
                 cursor_senha += 1
-
             k_right_timer = tempo_atual
 
         # Definir eventos de interação
@@ -179,10 +171,6 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
             if event.type == pygame.KEYDOWN:
 
                 # Evento BACKSPACE
-                if event.key == pygame.K_BACKSPACE:
-                    backspace_timer = pygame.time.get_ticks() - BACKSPACE_DELAY
-
-                # Evento K-RIGHT
                 if event.key == pygame.K_BACKSPACE:
                     backspace_timer = pygame.time.get_ticks() - BACKSPACE_DELAY
 

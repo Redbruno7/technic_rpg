@@ -21,9 +21,9 @@ pygame.display.set_caption("Guedgers")
 fonte = pygame.font.SysFont('Unicode', 40)
 
 # Dimensionar botões
-botao_entrar = pygame.Rect(735, 100, 130, 50)
-botao_registrar = pygame.Rect(735, 200, 130, 50)
-botao_sair = pygame.Rect(735, 300, 130, 50)
+botao_entrar = pygame.Rect(620, 420, 370, 50)
+botao_registrar = pygame.Rect(620, 520, 370, 50)
+botao_sair = pygame.Rect(735, 620, 130, 50)
 
 # Unificar botões
 botoes = (botao_entrar, botao_registrar, botao_sair)
@@ -36,7 +36,7 @@ mao_cursor = pygame.SYSTEM_CURSOR_HAND
 cursores = (padrao_cursor, mao_cursor)
 
 # Definir imagem de de fundo
-fundo = pygame.image.load("imgs/minecraft.jpg")
+fundo = pygame.image.load("imgs/guedgers_principal.png")
 fundo = pygame.transform.scale(fundo, (largura, altura))
 
 
