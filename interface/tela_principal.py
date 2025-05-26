@@ -40,7 +40,7 @@ fundo = pygame.image.load("imgs/guedgers_principal.png")
 fundo = pygame.transform.scale(fundo, (largura, altura))
 
 
-def janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo):
+def janela_principal(tela, largura, altura, fonte, botoes, cursores):
     """
     Controlar a tela principal do programa, exibir botões para entrar, registrar e sair, além de gerenciar eventos do mouse e troca de telas
 
@@ -88,7 +88,7 @@ def janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo):
                 # Botão Entrar
                 if botao_entrar.collidepoint(event.pos):
                     return tela_entrar.tela_entrar(
-                        tela, largura, altura, fonte, botoes, cursores, fundo)
+                        tela, largura, altura, fonte, botoes, cursores)
                 
                 # Botão Registrar
                 if botao_registrar.collidepoint(event.pos):

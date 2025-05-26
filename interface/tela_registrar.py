@@ -18,7 +18,7 @@ os.system('cls')
 fonte = pygame.font.SysFont('Unicode', 40)
 
 # Conectar Banco de dados
-conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
+conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
 cursor = conn.cursor()
 
 
@@ -125,12 +125,12 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
                 # Botão Voltar
                 if botao_voltar.collidepoint(event.pos):
-                    return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
+                    return janela_principal(tela, largura, altura, fonte, botoes, cursores)
 
                 # Botão Registrar
                 if botao_registrar.collidepoint(event.pos):
                     if registrar_usuario():
-                        return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
+                        return janela_principal(tela, largura, altura, fonte, botoes, cursores)
                     
                     else:
                         mensagem_erro = "Preencha todos os campos"

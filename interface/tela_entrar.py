@@ -15,10 +15,18 @@ pygame.init()
 os.system('cls')
 
 
-conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
+conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
+
+largura = 1600
+altura = 800
+tela = pygame.display.set_mode((largura, altura))
 
 
-def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
+
+
+def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
+    fundo = pygame.image.load("imgs/fundo_geral.png")
+    fundo = pygame.transform.scale(fundo, (largura, altura))
     """
     Exibir a tela de login com campos de e-mail e senha, e botões "Entrar" e "Voltar"
 
@@ -141,12 +149,12 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
 
                 # Botão Voltar
                 if botao_voltar.collidepoint(event.pos):
-                    return janela_principal(tela, largura, altura, fonte, botoes, cursores, fundo)
+                    return janela_principal(tela, largura, altura, fonte, botoes, cursores)
 
                 # Botão Entrar
                 elif botao_logar.collidepoint(event.pos):
                     if autenticar_usuario(texto_email, texto_senha):
-                        return tela_logar(tela, largura, altura, fonte, botoes, cursores, fundo)
+                        return tela_logar(tela, largura, altura, fonte, botoes, cursores)
 
                     else:
                         mensagem_erro = "Email e/ou Senha incorretos."
@@ -206,8 +214,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores, fundo):
                             char + texto_senha[cursor_senha:]
                         cursor_senha += 1
 
-        # Preencher fundo
-        tela.fill(cores.BRANCO)
+            tela.blit(fundo, (0, 0))
 
         # Método - Desenhar título
         desenhar_rotulo_campo(tela, fonte, email_input, "Email")

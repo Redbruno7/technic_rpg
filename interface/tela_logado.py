@@ -9,6 +9,10 @@ from interface.tela_principal import janela_principal
 pygame.init()
 os.system('cls')
 
+largura = 1600
+altura = 800
+tela = pygame.display.set_mode((largura, altura))
+
 
 def tela_logar(tela, largura, altura, fonte, botoes, cursores, fundo):
     """
