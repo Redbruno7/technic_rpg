@@ -54,7 +54,7 @@ def desenhar_campo_texto(tela, fonte, retangulo, texto, ativo, cursor_index=0, o
 
     # Desenhar cursor se ativo
     if ativo:
-        
+
         # Corrigir índice se maior que o texto
         cursor_index = min(cursor_index, len(texto))
 
@@ -189,55 +189,6 @@ def processar_digito_login(event, email_ativo, senha_ativo, texto_email, pos_cur
     return (texto_email, texto_senha, pos_cursor_email, pos_cursor_senha)
 
 
-def calcular_posicao_formatada_cpf(numeros, pos_cursor_numeros):
-    """
-    Converte a posição do cursor na string 'numeros' (sem pontuação)
-    para a posição correspondente na string formatada (com pontos e traço).
-    """
-    i_n = 0  # índice nos números
-    i_f = 0  # índice na string formatada
-
-    while i_n < len(numeros) and i_n < pos_cursor_numeros:
-        if i_n == 3 or i_n == 6:
-            i_f += 1  # ponto
-        elif i_n == 9:
-            i_f += 1  # traço
-        i_n += 1
-        i_f += 1
-
-    return i_f
-
-
-def formatar_cpf_com_cursor(numeros, pos_cursor_digito):
-    """
-    Formata o CPF e retorna:
-    - texto formatado com pontos e traço
-    - posição visual do cursor no texto formatado
-    """
-    texto_formatado = ""
-    cursor_visual = 0
-    pos_digito = 0
-
-    for i, digito in enumerate(numeros):
-        if pos_digito == pos_cursor_digito:
-            cursor_visual = len(texto_formatado)
-
-        texto_formatado += digito
-        pos_digito += 1
-
-        # Adiciona formatação conforme o número de dígitos
-        if i == 2 or i == 5:
-            texto_formatado += "."
-        elif i == 8:
-            texto_formatado += "-"
-
-    # Caso cursor esteja no final
-    if pos_cursor_digito == len(numeros):
-        cursor_visual = len(texto_formatado)
-
-    return texto_formatado, cursor_visual
-
-
 def processar_digito_registro(event, nome_ativo, cpf_ativo, email_ativo, senha_ativo,
                               texto_nome, texto_cpf, texto_email, texto_senha,
                               pos_cursor_nome, pos_cursor_cpf, pos_cursor_email, pos_cursor_senha):
@@ -267,28 +218,19 @@ def processar_digito_registro(event, nome_ativo, cpf_ativo, email_ativo, senha_a
 
     # CPF
     elif cpf_ativo:
-        numeros = ''.join(filter(str.isdigit, texto_cpf))
+        if event.key == pygame.K_BACKSPACE and pos_cursor_cpf > 0:
+            texto_cpf = texto_cpf[:pos_cursor_cpf - 1] + texto_cpf[pos_cursor_cpf:]
+            pos_cursor_cpf -= 1
 
-        if event.key == pygame.K_BACKSPACE:
-            if pos_cursor_cpf > 0:
-                numeros = numeros[:pos_cursor_cpf - 1] + numeros[pos_cursor_cpf:]
-                pos_cursor_cpf -= 1
+        elif event.key == pygame.K_LEFT and pos_cursor_cpf > 0:
+            pos_cursor_cpf -= 1
 
-        elif event.key == pygame.K_LEFT:
-            if pos_cursor_cpf > 0:
-                pos_cursor_cpf -= 1
+        elif event.key == pygame.K_RIGHT and pos_cursor_cpf < len(texto_cpf):
+            pos_cursor_cpf += 1
 
-        elif event.key == pygame.K_RIGHT:
-            if pos_cursor_cpf < len(numeros):
-                pos_cursor_cpf += 1
-
-        elif event.unicode.isdigit():
-            if len(numeros) < 11:
-                numeros = numeros[:pos_cursor_cpf] + event.unicode + numeros[pos_cursor_cpf:]
-                pos_cursor_cpf += 1
-
-        # Chamar função para formatar e ajustar posição visual
-        texto_cpf, cursor_cpf = formatar_cpf_com_cursor(numeros, pos_cursor_cpf)
+        elif event.unicode.isdigit() and len(texto_cpf) < 11:
+            texto_cpf = texto_cpf[:pos_cursor_cpf] + event.unicode + texto_cpf[pos_cursor_cpf:]
+            pos_cursor_cpf += 1
 
     # EMAIL
     elif email_ativo:
