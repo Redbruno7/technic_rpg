@@ -14,7 +14,12 @@ altura = 800
 tela = pygame.display.set_mode((largura, altura))
 
 
-def tela_logar(tela, largura, altura, fonte, botoes, cursores, fundo):
+def tela_logar(tela, largura, altura, fonte, botoes, cursores):
+
+    # Carregar imagem de fundo
+    fundo = pygame.image.load("imgs/fundo_logado.png")
+    fundo = pygame.transform.scale(fundo, (largura, altura))
+
     botao_sair = pygame.Rect(650, 400, 100, 50)
     padrao_cursor, mao_cursor = cursores
 
@@ -38,9 +43,10 @@ def tela_logar(tela, largura, altura, fonte, botoes, cursores, fundo):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if botao_sair.collidepoint(event.pos):
                     return janela_principal(
-                        tela, largura, altura, fonte, botoes, cursores, fundo)
-
-        tela.fill(cores.BRANCO)
+                        tela, largura, altura, fonte, botoes, cursores)
+                
+        # Setar tela de fundo
+        tela.blit(fundo, (0, 0))
 
         desenhar_botao(tela, botao_sair, "Sair", fonte, cores.VERMELHO_ESC)
 
