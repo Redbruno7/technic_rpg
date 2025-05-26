@@ -66,9 +66,9 @@ def janela_principal(tela, largura, altura, fonte, botoes, cursores):
         mouse_pos = pygame.mouse.get_pos()
 
         # Atualizar cursor
-        if (botao_entrar.collidepoint(mouse_pos) or 
-            botao_registrar.collidepoint(mouse_pos) or 
-            botao_sair.collidepoint(mouse_pos)):
+        if (botao_entrar.collidepoint(mouse_pos) or
+            botao_registrar.collidepoint(mouse_pos) or
+                botao_sair.collidepoint(mouse_pos)):
 
             pygame.mouse.set_cursor(mao_cursor)
 
@@ -89,12 +89,12 @@ def janela_principal(tela, largura, altura, fonte, botoes, cursores):
                 if botao_entrar.collidepoint(event.pos):
                     return tela_entrar.tela_entrar(
                         tela, largura, altura, fonte, botoes, cursores)
-                
+
                 # Botão Registrar
                 if botao_registrar.collidepoint(event.pos):
                     return tela_registrar.tela_registrar(
                         tela, largura, altura, fonte, botoes, cursores)
-                
+
                 # Botão Sair
                 if botao_sair.collidepoint(event.pos):
                     pygame.quit()

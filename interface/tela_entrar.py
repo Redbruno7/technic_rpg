@@ -23,7 +23,7 @@ altura = 800
 tela = pygame.display.set_mode((largura, altura))
 
 
-def tela_entrar(tela, largura, altura, fonte, botoes, cursores):   
+def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
     from interface.tela_principal import janela_principal
     from interface.tela_logado import tela_logar
 
@@ -97,10 +97,12 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
         # DELETE contínuo
         if teclas[pygame.K_DELETE] and tempo_atual - delete_timer > DELETE_DELAY:
             if email_ativo and cursor_email > 0:
-                texto_email = texto_email[:cursor_email] + texto_email[cursor_email + 1:]
+                texto_email = texto_email[:cursor_email] + \
+                    texto_email[cursor_email + 1:]
 
             elif senha_ativo and cursor_senha > 0:
-                texto_senha = texto_senha[:cursor_senha] + texto_senha[cursor_senha + 1:]
+                texto_senha = texto_senha[:cursor_senha] + \
+                    texto_senha[cursor_senha + 1:]
 
             delete_timer = tempo_atual
 

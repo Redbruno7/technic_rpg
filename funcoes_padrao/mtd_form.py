@@ -58,7 +58,8 @@ def desenhar_campo_texto(tela, fonte, retangulo, texto, ativo, cursor_index=0, o
     tela.set_clip(retangulo)
 
     # Desenhar o texto com scroll aplicado
-    tela.blit(texto_render, (retangulo.x + 5 - scroll_x, retangulo.y + (retangulo.height - fonte.get_height()) // 2))
+    tela.blit(texto_render, (retangulo.x + 5 - scroll_x,
+              retangulo.y + (retangulo.height - fonte.get_height()) // 2))
 
     # Restaurar clipping
     tela.set_clip(None)
@@ -68,7 +69,8 @@ def desenhar_campo_texto(tela, fonte, retangulo, texto, ativo, cursor_index=0, o
         cursor_x = retangulo.x + 5 + cursor_x_total - scroll_x
         cursor_y = retangulo.y + (retangulo.height - fonte.get_height()) // 2
         cursor_altura = fonte.get_height()
-        pygame.draw.line(tela, cor_texto, (cursor_x, cursor_y), (cursor_x, cursor_y + cursor_altura))
+        pygame.draw.line(tela, cor_texto, (cursor_x, cursor_y),
+                         (cursor_x, cursor_y + cursor_altura))
 
 
 def desenhar_botao(tela, rect, texto, fonte, cor_fundo):

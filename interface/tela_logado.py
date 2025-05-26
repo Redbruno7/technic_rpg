@@ -34,7 +34,6 @@ def tela_logar(tela, largura, altura, fonte, botoes, cursores):
         else:
             pygame.mouse.set_cursor(padrao_cursor)
 
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -44,7 +43,7 @@ def tela_logar(tela, largura, altura, fonte, botoes, cursores):
                 if botao_sair.collidepoint(event.pos):
                     return janela_principal(
                         tela, largura, altura, fonte, botoes, cursores)
-                
+
         # Setar tela de fundo
         tela.blit(fundo, (0, 0))
 

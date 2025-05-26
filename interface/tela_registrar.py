@@ -129,16 +129,19 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
         # DELETE contínuo
         if teclas[pygame.K_DELETE] and tempo_atual - delete_timer > DELETE_DELAY:
             if nome_ativo and cursor_nome > 0:
-                texto_nome = texto_nome[:cursor_nome] + texto_nome[cursor_nome + 1:]
+                texto_nome = texto_nome[:cursor_nome] + \
+                    texto_nome[cursor_nome + 1:]
 
             elif cpf_ativo and cursor_cpf > 0:
                 texto_cpf = texto_cpf[:cursor_cpf] + texto_cpf[cursor_cpf + 1:]
-            
+
             elif email_ativo and cursor_email > 0:
-                texto_email = texto_email[:cursor_email] + texto_email[cursor_email + 1:]
+                texto_email = texto_email[:cursor_email] + \
+                    texto_email[cursor_email + 1:]
 
             elif senha_ativo and cursor_senha > 0:
-                texto_senha = texto_senha[:cursor_senha] + texto_senha[cursor_senha + 1:]
+                texto_senha = texto_senha[:cursor_senha] + \
+                    texto_senha[cursor_senha + 1:]
 
             delete_timer = tempo_atual
 
@@ -146,7 +149,7 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
         if teclas[pygame.K_LEFT] and tempo_atual - left_timer > LEFT_DELAY:
             if nome_ativo and cursor_nome > 0:
                 cursor_nome -= 1
-            
+
             elif cpf_ativo and cursor_cpf > 0:
                 cursor_cpf -= 1
 
@@ -162,7 +165,7 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
         if teclas[pygame.K_RIGHT] and tempo_atual - right_timer > RIGHT_DELAY:
             if nome_ativo and cursor_nome < len(texto_nome):
                 cursor_nome += 1
-            
+
             elif cpf_ativo and cursor_cpf < len(texto_cpf):
                 cursor_cpf += 1
 
@@ -235,7 +238,7 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
                 # Processa digitação, backspace e setas
                 else:
                     (texto_nome, texto_cpf, texto_email, texto_senha,
-                    cursor_nome, cursor_cpf, cursor_email, cursor_senha) = processar_digito_registro(
+                     cursor_nome, cursor_cpf, cursor_email, cursor_senha) = processar_digito_registro(
                         event, nome_ativo, cpf_ativo, email_ativo, senha_ativo,
                         texto_nome, texto_cpf, texto_email, texto_senha,
                         cursor_nome, cursor_cpf, cursor_email, cursor_senha
