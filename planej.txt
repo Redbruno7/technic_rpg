@@ -1,15 +1,9 @@
 O QUE FALTA
 
-+ Funções formulário
-    º ENTER para entrar / registrar
-
 + Tela Logado
     º Construir tela com base no usuário logado / Com informações do registro
 
 + Design das telas:
-    º Principal
-    º Entrar
-    º Registrar
     º Logado
 
 + Implementações futuras:
