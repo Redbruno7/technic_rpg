@@ -18,7 +18,6 @@ os.system('cls')
 conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
 cursor = conn.cursor()
 
-
 # Definir dimensão da tela
 largura = 1600
 altura = 800
@@ -49,6 +48,12 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
     # Definir temporizadores para funções de tecla
     backspace_timer = 0
     BACKSPACE_DELAY = 100
+    delete_timer = 0
+    DELETE_DELAY = 100
+    left_timer = 0
+    LEFT_DELAY = 100
+    right_timer = 0
+    RIGHT_DELAY = 100
 
     # Definir método de registro de usuário
     def registrar_usuario():
@@ -98,7 +103,7 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
         teclas = pygame.key.get_pressed()
         tempo_atual = pygame.time.get_ticks()
 
-        # Definir evento contínuo BACKSPACE
+        # BACKSPACE contínuo
         if teclas[pygame.K_BACKSPACE] and tempo_atual - backspace_timer > BACKSPACE_DELAY:
             if nome_ativo and cursor_nome > 0:
                 texto_nome = texto_nome[:cursor_nome -
@@ -120,6 +125,54 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
                 cursor_senha -= 1
 
             backspace_timer = tempo_atual
+
+        # DELETE contínuo
+        if teclas[pygame.K_DELETE] and tempo_atual - delete_timer > DELETE_DELAY:
+            if nome_ativo and cursor_nome > 0:
+                texto_nome = texto_nome[:cursor_nome] + texto_nome[cursor_nome + 1:]
+
+            elif cpf_ativo and cursor_cpf > 0:
+                texto_cpf = texto_cpf[:cursor_cpf] + texto_cpf[cursor_cpf + 1:]
+            
+            elif email_ativo and cursor_email > 0:
+                texto_email = texto_email[:cursor_email] + texto_email[cursor_email + 1:]
+
+            elif senha_ativo and cursor_senha > 0:
+                texto_senha = texto_senha[:cursor_senha] + texto_senha[cursor_senha + 1:]
+
+            delete_timer = tempo_atual
+
+        # K-LEFT contínuo
+        if teclas[pygame.K_LEFT] and tempo_atual - left_timer > LEFT_DELAY:
+            if nome_ativo and cursor_nome > 0:
+                cursor_nome -= 1
+            
+            elif cpf_ativo and cursor_cpf > 0:
+                cursor_cpf -= 1
+
+            elif email_ativo and cursor_email > 0:
+                cursor_email -= 1
+
+            elif senha_ativo and cursor_senha > 0:
+                cursor_senha -= 1
+
+            left_timer = tempo_atual
+
+        # K-RIGHT contínuo
+        if teclas[pygame.K_RIGHT] and tempo_atual - right_timer > RIGHT_DELAY:
+            if nome_ativo and cursor_nome < len(texto_nome):
+                cursor_nome += 1
+            
+            elif cpf_ativo and cursor_cpf < len(texto_cpf):
+                cursor_cpf += 1
+
+            elif email_ativo and cursor_email < len(texto_email):
+                cursor_email += 1
+
+            elif senha_ativo and cursor_senha < len(texto_senha):
+                cursor_senha += 1
+
+            right_timer = tempo_atual
 
         # Definir eventos de interação
         for event in pygame.event.get():
@@ -149,6 +202,18 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
                 # Evento BACKSPACE
                 if event.key == pygame.K_BACKSPACE:
                     backspace_timer = pygame.time.get_ticks() - BACKSPACE_DELAY
+
+                # DELETE
+                if event.key == pygame.K_DELETE:
+                    delete_timer = pygame.time.get_ticks() - DELETE_DELAY
+
+                # K-LEFT
+                if event.key == pygame.K_LEFT:
+                    left_timer = pygame.time.get_ticks() - LEFT_DELAY
+
+                # K-RIGHT
+                if event.key == pygame.K_RIGHT:
+                    right_timer = pygame.time.get_ticks() - RIGHT_DELAY
 
                 # Evento TAB
                 elif event.key == pygame.K_TAB:

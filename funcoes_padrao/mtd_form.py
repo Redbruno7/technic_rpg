@@ -105,22 +105,8 @@ def processar_digito_login(event, email_ativo, senha_ativo, texto_email, texto_s
     # Email
     if email_ativo:
 
-        # BACKSPACE
-        if event.key == pygame.K_BACKSPACE and pos_cursor_email > 0:
-            texto_email = texto_email[:pos_cursor_email -
-                                      1] + texto_email[pos_cursor_email:]
-            pos_cursor_email -= 1
-
-        # K-LEFT
-        elif event.key == pygame.K_LEFT and pos_cursor_email > 0:
-            pos_cursor_email -= 1
-
-        # K-RIGHT
-        elif event.key == pygame.K_RIGHT and pos_cursor_email < len(texto_email):
-            pos_cursor_email += 1
-
         # DEFAULT
-        elif len(event.unicode) > 0 and event.unicode.isprintable():
+        if len(event.unicode) > 0 and event.unicode.isprintable():
             texto_email = texto_email[:pos_cursor_email] + \
                 event.unicode + texto_email[pos_cursor_email:]
             pos_cursor_email += len(event.unicode)
@@ -128,22 +114,8 @@ def processar_digito_login(event, email_ativo, senha_ativo, texto_email, texto_s
     # Senha
     elif senha_ativo:
 
-        # BACKSPACE
-        if event.key == pygame.K_BACKSPACE and pos_cursor_senha > 0:
-            texto_senha = texto_senha[:pos_cursor_senha -
-                                      1] + texto_senha[pos_cursor_senha:]
-            pos_cursor_senha -= 1
-
-        # K-LEFT
-        elif event.key == pygame.K_LEFT and pos_cursor_senha > 0:
-            pos_cursor_senha -= 1
-
-        # K-RIGHT
-        elif event.key == pygame.K_RIGHT and pos_cursor_senha < len(texto_senha):
-            pos_cursor_senha += 1
-
         # DEFAULT
-        elif len(event.unicode) > 0 and event.unicode.isprintable():
+        if len(event.unicode) > 0 and event.unicode.isprintable():
             texto_senha = texto_senha[:pos_cursor_senha] + \
                 event.unicode + texto_senha[pos_cursor_senha:]
             pos_cursor_senha += len(event.unicode)
@@ -158,22 +130,8 @@ def processar_digito_registro(event, nome_ativo, cpf_ativo, email_ativo, senha_a
     # Nome
     if nome_ativo:
 
-        # BACKSPACE
-        if event.key == pygame.K_BACKSPACE and pos_cursor_nome > 0:
-            texto_nome = texto_nome[:pos_cursor_nome -
-                                    1] + texto_nome[pos_cursor_nome:]
-            pos_cursor_nome -= 1
-
-        # K-LEFT
-        elif event.key == pygame.K_LEFT and pos_cursor_nome > 0:
-            pos_cursor_nome -= 1
-
-        # K_RIGHT
-        elif event.key == pygame.K_RIGHT and pos_cursor_nome < len(texto_nome):
-            pos_cursor_nome += 1
-
         # DEFAULT
-        elif len(event.unicode) > 0 and event.unicode.isprintable():
+        if len(event.unicode) > 0 and event.unicode.isprintable():
             texto_nome = texto_nome[:pos_cursor_nome] + \
                 event.unicode + texto_nome[pos_cursor_nome:]
             pos_cursor_nome += len(event.unicode)
@@ -181,22 +139,8 @@ def processar_digito_registro(event, nome_ativo, cpf_ativo, email_ativo, senha_a
     # CPF
     elif cpf_ativo:
 
-        # BACKSPACE
-        if event.key == pygame.K_BACKSPACE and pos_cursor_cpf > 0:
-            texto_cpf = texto_cpf[:pos_cursor_cpf - 1] + \
-                texto_cpf[pos_cursor_cpf:]
-            pos_cursor_cpf -= 1
-
-        # K_LEFT
-        elif event.key == pygame.K_LEFT and pos_cursor_cpf > 0:
-            pos_cursor_cpf -= 1
-
-        # K-RIGHT
-        elif event.key == pygame.K_RIGHT and pos_cursor_cpf < len(texto_cpf):
-            pos_cursor_cpf += 1
-
         # DEFAULT
-        elif event.unicode.isdigit() and len(texto_cpf) < 11:
+        if event.unicode.isdigit() and len(texto_cpf) < 11:
             texto_cpf = texto_cpf[:pos_cursor_cpf] + \
                 event.unicode + texto_cpf[pos_cursor_cpf:]
             pos_cursor_cpf += 1
@@ -204,22 +148,8 @@ def processar_digito_registro(event, nome_ativo, cpf_ativo, email_ativo, senha_a
     # Email
     elif email_ativo:
 
-        # BACKSPACE
-        if event.key == pygame.K_BACKSPACE and pos_cursor_email > 0:
-            texto_email = texto_email[:pos_cursor_email -
-                                      1] + texto_email[pos_cursor_email:]
-            pos_cursor_email -= 1
-
-        # K-LEFT
-        elif event.key == pygame.K_LEFT and pos_cursor_email > 0:
-            pos_cursor_email -= 1
-
-        # K-RIGHT
-        elif event.key == pygame.K_RIGHT and pos_cursor_email < len(texto_email):
-            pos_cursor_email += 1
-
         # DEFAULT
-        elif len(event.unicode) > 0 and event.unicode.isprintable():
+        if len(event.unicode) > 0 and event.unicode.isprintable():
             texto_email = texto_email[:pos_cursor_email] + \
                 event.unicode + texto_email[pos_cursor_email:]
             pos_cursor_email += len(event.unicode)
@@ -227,22 +157,8 @@ def processar_digito_registro(event, nome_ativo, cpf_ativo, email_ativo, senha_a
     # Senha
     elif senha_ativo:
 
-        # BACKSPACE
-        if event.key == pygame.K_BACKSPACE and pos_cursor_senha > 0:
-            texto_senha = texto_senha[:pos_cursor_senha -
-                                      1] + texto_senha[pos_cursor_senha:]
-            pos_cursor_senha -= 1
-
-        # K-LEFT
-        elif event.key == pygame.K_LEFT and pos_cursor_senha > 0:
-            pos_cursor_senha -= 1
-
-        # K-RIGHT
-        elif event.key == pygame.K_RIGHT and pos_cursor_senha < len(texto_senha):
-            pos_cursor_senha += 1
-
         # DEFAULT
-        elif len(event.unicode) > 0 and event.unicode.isprintable():
+        if len(event.unicode) > 0 and event.unicode.isprintable():
             texto_senha = texto_senha[:pos_cursor_senha] + \
                 event.unicode + texto_senha[pos_cursor_senha:]
             pos_cursor_senha += len(event.unicode)

@@ -14,7 +14,7 @@ from funcoes_padrao.mtd_form import processar_digito_login
 pygame.init()
 os.system('cls')
 
-
+# Conectar Banco de dados
 conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
 
 # Definir dimensão da tela
@@ -46,18 +46,15 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
     # Definir temporizadores para funções de tecla
     backspace_timer = 0
     BACKSPACE_DELAY = 100
+    delete_timer = 0
+    DELETE_DELAY = 100
+    left_timer = 0
+    LEFT_DELAY = 100
+    right_timer = 0
+    RIGHT_DELAY = 100
 
     # Definir método de autenticação de usuário
     def autenticar_usuario(email, senha):
-        """_summary_
-
-        Args:
-            email (_type_): _description_
-            senha (_type_): _description_
-
-        Returns:
-            _type_: _description_
-        """
         try:
             cursor = conn.cursor()
             cursor.execute(
@@ -83,7 +80,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
         teclas = pygame.key.get_pressed()
         tempo_atual = pygame.time.get_ticks()
 
-        # Definir evento contínuo BACKSPACE
+        # BACKSPACE contínuo
         if teclas[pygame.K_BACKSPACE] and tempo_atual - backspace_timer > BACKSPACE_DELAY:
             if email_ativo and cursor_email > 0:
                 texto_email = texto_email[:cursor_email -
@@ -96,6 +93,36 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
                 cursor_senha -= 1
 
             backspace_timer = tempo_atual
+
+        # DELETE contínuo
+        if teclas[pygame.K_DELETE] and tempo_atual - delete_timer > DELETE_DELAY:
+            if email_ativo and cursor_email > 0:
+                texto_email = texto_email[:cursor_email] + texto_email[cursor_email + 1:]
+
+            elif senha_ativo and cursor_senha > 0:
+                texto_senha = texto_senha[:cursor_senha] + texto_senha[cursor_senha + 1:]
+
+            delete_timer = tempo_atual
+
+        # K-LEFT contínuo
+        if teclas[pygame.K_LEFT] and tempo_atual - left_timer > LEFT_DELAY:
+            if email_ativo and cursor_email > 0:
+                cursor_email -= 1
+
+            elif senha_ativo and cursor_senha > 0:
+                cursor_senha -= 1
+
+            left_timer = tempo_atual
+
+        # K-RIGHT contínuo
+        if teclas[pygame.K_RIGHT] and tempo_atual - right_timer > RIGHT_DELAY:
+            if email_ativo and cursor_email < len(texto_email):
+                cursor_email += 1
+
+            elif senha_ativo and cursor_senha < len(texto_senha):
+                cursor_senha += 1
+
+            right_timer = tempo_atual
 
         # Definir eventos de interação
         for event in pygame.event.get():
@@ -125,9 +152,21 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
             # Evento de tecla
             if event.type == pygame.KEYDOWN:
 
-                # Evento BACKSPACE
+                # BACKSPACE
                 if event.key == pygame.K_BACKSPACE:
                     backspace_timer = pygame.time.get_ticks() - BACKSPACE_DELAY
+
+                # DELETE
+                if event.key == pygame.K_DELETE:
+                    delete_timer = pygame.time.get_ticks() - DELETE_DELAY
+
+                # K-LEFT
+                if event.key == pygame.K_LEFT:
+                    left_timer = pygame.time.get_ticks() - LEFT_DELAY
+
+                # K-RIGHT
+                if event.key == pygame.K_RIGHT:
+                    right_timer = pygame.time.get_ticks() - RIGHT_DELAY
 
                 # Evento TAB
                 elif event.key == pygame.K_TAB:
