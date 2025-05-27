@@ -15,12 +15,12 @@ pygame.init()
 os.system('cls')
 
 # Conectar Banco de dados
-conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
+conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
 cursor = conn.cursor()
 
-# Definir dimensão da tela
-largura = 1920
-altura = 1080
+# Dimensões de tela fullscreen baseada no monitor do usuário
+info = pygame.display.Info()
+largura, altura = info.current_w, info.current_h
 tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
 
@@ -260,7 +260,7 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
                 # ENTER
                 elif event.key == pygame.K_RETURN:
                     if alterar_usuario():
-                        return tela_logar(tela, largura, altura, fonte, botoes, cursores)
+                        return tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original)
 
                 # Processa digitação, backspace e setas
                 else:

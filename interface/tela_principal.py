@@ -12,10 +12,15 @@ os.system('cls')
 icone = pygame.image.load("imgs\icone.png")
 pygame.display.set_icon(icone)
 
-# Definir e atribuir dimensões da tela
-largura = 1920
-altura = 1080
+# Dimensões de tela fullscreen baseada no monitor do usuário
+info = pygame.display.Info()
+largura, altura = info.current_w, info.current_h
 tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
+
+
+# Definir imagem de de fundo
+fundo = pygame.image.load("imgs/guedgers_principal.png")
+fundo = pygame.transform.scale(fundo, (largura, altura))
 
 # Nomear tela
 pygame.display.set_caption("Guedgers")
@@ -37,10 +42,6 @@ mao_cursor = pygame.SYSTEM_CURSOR_HAND
 
 # Unificar cursores
 cursores = (padrao_cursor, mao_cursor)
-
-# Definir imagem de de fundo
-fundo = pygame.image.load("imgs/guedgers_principal.png")
-fundo = pygame.transform.scale(fundo, (largura, altura))
 
 
 def janela_principal(tela, largura, altura, fonte, botoes, cursores):

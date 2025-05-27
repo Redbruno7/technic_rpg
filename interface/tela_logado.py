@@ -12,14 +12,14 @@ from interface.tela_editar import tela_editar
 pygame.init()
 os.system('cls')
 
-largura = 1920
-altura = 1080
-tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
-
-
 # Conectar Banco de dados
-conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
+conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
 cursor = conn.cursor()
+
+# Dimensões de tela fullscreen baseada no monitor do usuário
+info = pygame.display.Info()
+largura, altura = info.current_w, info.current_h
+tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
 
 def tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original):
@@ -31,9 +31,7 @@ def tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original):
     guedgers = pygame.image.load("imgs/guedgers.png")
 
     bem_vindo = pygame.image.load("imgs/info.png")
-    bem_vindo = pygame.transform.scale(bem_vindo , (300, 300))
-
-
+    bem_vindo = pygame.transform.scale(bem_vindo, (300, 300))
 
     botao_sair = pygame.Rect(250, 550, 100, 50)
     botao_editar = pygame.Rect(100, 550, 100, 50)
@@ -76,7 +74,9 @@ def tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original):
         mouse_pos = pygame.mouse.get_pos()
 
         if (botao_sair.collidepoint(mouse_pos)):
+            pygame.mouse.set_cursor(mao_cursor)
 
+        elif (botao_editar.collidepoint(mouse_pos)):
             pygame.mouse.set_cursor(mao_cursor)
 
         else:
@@ -92,13 +92,13 @@ def tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original):
                     if botao_sair.collidepoint(event.pos):
                         return janela_principal(
                             tela, largura, altura, fonte, botoes, cursores)
-                
 
                     if botao_editar.collidepoint(event.pos):
                         return tela_editar(
                             tela, largura, altura, fonte, botoes, cursores, email_original)
 
         desenhar_botao(tela, botao_sair, "Sair", fonte, cores.SANGUE_SECO)
-        desenhar_botao(tela, botao_editar, "Editar", fonte, cores.AMARELO_OURO_VELHO)
+        desenhar_botao(tela, botao_editar, "Editar",
+                       fonte, cores.AMARELO_OURO_VELHO)
         exibir_usuario()
         pygame.display.update()
