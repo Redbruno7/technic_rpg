@@ -15,7 +15,7 @@ pygame.init()
 os.system('cls')
 
 # Conectar Banco de dados
-conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
+conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
 
 # Definir dimensão da tela
 largura = 1600
@@ -142,7 +142,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
                 # Botão Entrar
                 elif botao_logar.collidepoint(event.pos):
                     if autenticar_usuario(texto_email, texto_senha):
-                        return tela_logar(tela, largura, altura, fonte, botoes, cursores)
+                        return tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email)
 
                     else:
                         mensagem_erro = "Email e/ou Senha incorretos."
@@ -184,7 +184,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
                 # ENTER
                 elif event.key == pygame.K_RETURN:
                     if autenticar_usuario(texto_email, texto_senha):
-                        return tela_logar(tela, largura, altura, fonte, botoes, cursores)
+                        return tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email)
                     else:
                         mensagem_erro = "Email e/ou Senha incorretos."
 
