@@ -19,9 +19,9 @@ conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
 cursor = conn.cursor()
 
 # Definir dimensão da tela
-largura = 1600
-altura = 800
-tela = pygame.display.set_mode((largura, altura))
+largura = 1920
+altura = 1080
+tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
 
 def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
@@ -31,6 +31,11 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
     fundo = pygame.image.load("imgs/fundo_geral.png")
     fundo = pygame.transform.scale(fundo, (largura, altura))
 
+
+    alterar = pygame.image.load("imgs/alterar.png")
+    alterar = pygame.transform.scale(alterar, (500, 500))
+
+
     # Definir posição dos campos e botões
     botao_voltar = pygame.Rect(620, 600, 130, 50)
     botao_alterar = pygame.Rect(850, 600, 130, 50)
@@ -38,6 +43,7 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
     novo_cpf = pygame.Rect(600, 270, 400, 50)
     novo_email = pygame.Rect(600, 380, 400, 50)
     novo_senha = pygame.Rect(600, 500, 400, 50)
+
 
 
     # aqui deixa os campos da edicao pré-preenchidos
@@ -200,19 +206,20 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
 
             # Evento de clique
             if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
 
-                # Botão Voltar
-                if botao_voltar.collidepoint(event.pos):                              
-                    return tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original)
+                    # Botão Voltar
+                    if botao_voltar.collidepoint(event.pos):                              
+                        return tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original)
 
-                # Botão Registrar
-                if botao_alterar.collidepoint(event.pos):
-                    if alterar_usuario():                                                 
-                        return tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email)
+                    # Botão Registrar
+                    if botao_alterar.collidepoint(event.pos):
+                        if alterar_usuario():                                                 
+                            return tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email)
 
-                # Invocar método - Verificar campo ativo
-                nome_ativo, cpf_ativo, email_ativo, senha_ativo = verificar_campo_ativo_registro(
-                    event.pos, novo_nome, novo_cpf, novo_email, novo_senha)
+                    # Invocar método - Verificar campo ativo
+                    nome_ativo, cpf_ativo, email_ativo, senha_ativo = verificar_campo_ativo_registro(
+                        event.pos, novo_nome, novo_cpf, novo_email, novo_senha)
 
             # Evento de tecla
             if event.type == pygame.KEYDOWN:
@@ -266,6 +273,7 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
 
         # Setar tela de fundo
         tela.blit(fundo, (0, 0))
+        tela.blit(alterar, (50, 100))
         
 
         # Método - Título campo

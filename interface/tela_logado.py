@@ -12,9 +12,9 @@ from interface.tela_editar import tela_editar
 pygame.init()
 os.system('cls')
 
-largura = 1600
-altura = 800
-tela = pygame.display.set_mode((largura, altura))
+largura = 1920
+altura = 1080
+tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
 
 # Conectar Banco de dados
@@ -88,14 +88,15 @@ def tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original):
                 sys.exit()
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if botao_sair.collidepoint(event.pos):
-                    return janela_principal(
-                        tela, largura, altura, fonte, botoes, cursores)
-            
+                if event.button == 1:
+                    if botao_sair.collidepoint(event.pos):
+                        return janela_principal(
+                            tela, largura, altura, fonte, botoes, cursores)
+                
 
-                if botao_editar.collidepoint(event.pos):
-                    return tela_editar(
-                        tela, largura, altura, fonte, botoes, cursores, email_original)
+                    if botao_editar.collidepoint(event.pos):
+                        return tela_editar(
+                            tela, largura, altura, fonte, botoes, cursores, email_original)
 
         desenhar_botao(tela, botao_sair, "Sair", fonte, cores.SANGUE_SECO)
         desenhar_botao(tela, botao_editar, "Editar", fonte, cores.AMARELO_OURO_VELHO)

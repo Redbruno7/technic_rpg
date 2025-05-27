@@ -18,9 +18,9 @@ os.system('cls')
 conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
 
 # Definir dimensão da tela
-largura = 1600
-altura = 800
-tela = pygame.display.set_mode((largura, altura))
+largura = 1920
+altura = 1080
+tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
 
 def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
@@ -31,11 +31,14 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
     fundo = pygame.image.load("imgs/fundo_geral.png")
     fundo = pygame.transform.scale(fundo, (largura, altura))
 
+    login = pygame.image.load("imgs/login.png")
+    login = pygame.transform.scale(login, (300, 300))
+
     # Definir posição dos campos e botões
-    botao_logar = pygame.Rect(850, 400, 100, 50)
-    botao_voltar = pygame.Rect(650, 400, 100, 50)
-    email_input = pygame.Rect(600, 150, 400, 50)
-    senha_input = pygame.Rect(600, 300, 400, 50)
+    botao_logar = pygame.Rect(850, 550, 100, 50)
+    botao_voltar = pygame.Rect(650, 550, 100, 50)
+    email_input = pygame.Rect(600, 300, 400, 50)
+    senha_input = pygame.Rect(600, 450, 400, 50)
 
     # Definir valores textos, cursores e atividades
     texto_email, texto_senha = '', ''
@@ -134,22 +137,23 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
 
             # Evento de clique
             elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
 
-                # Botão Voltar
-                if botao_voltar.collidepoint(event.pos):
-                    return janela_principal(tela, largura, altura, fonte, botoes, cursores)
+                    # Botão Voltar
+                    if botao_voltar.collidepoint(event.pos):
+                        return janela_principal(tela, largura, altura, fonte, botoes, cursores)
 
-                # Botão Entrar
-                elif botao_logar.collidepoint(event.pos):
-                    if autenticar_usuario(texto_email, texto_senha):
-                        return tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email)
+                    # Botão Entrar
+                    elif botao_logar.collidepoint(event.pos):
+                        if autenticar_usuario(texto_email, texto_senha):
+                            return tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email)
 
-                    else:
-                        mensagem_erro = "Email e/ou Senha incorretos."
+                        else:
+                            mensagem_erro = "Email e/ou Senha incorretos."
 
-                # Invocar método - Verificar campo ativo
-                email_ativo, senha_ativo = verificar_campo_ativo_login(
-                    event.pos, email_input, senha_input)
+                    # Invocar método - Verificar campo ativo
+                    email_ativo, senha_ativo = verificar_campo_ativo_login(
+                        event.pos, email_input, senha_input)
 
             # Evento de tecla
             if event.type == pygame.KEYDOWN:
@@ -196,6 +200,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
 
         # Setar tela de fundo
         tela.blit(fundo, (0, 0))
+        tela.blit(login, (650, 0))
 
         # Método - Desenhar título
         desenhar_rotulo_campo(tela, fonte, email_input, "Email")

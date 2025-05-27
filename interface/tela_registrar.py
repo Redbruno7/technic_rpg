@@ -19,9 +19,9 @@ conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
 cursor = conn.cursor()
 
 # Definir dimensão da tela
-largura = 1600
-altura = 800
-tela = pygame.display.set_mode((largura, altura))
+largura = 1920
+altura = 1080
+tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
 
 def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
@@ -30,6 +30,9 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
     # Carregar imagem de fundo
     fundo = pygame.image.load("imgs/fundo_geral.png")
     fundo = pygame.transform.scale(fundo, (largura, altura))
+
+    criar = pygame.image.load("imgs/criar.png")
+    criar = pygame.transform.scale(criar, (500, 500))
 
     # Definir posição dos campos e botões
     botao_voltar = pygame.Rect(620, 600, 130, 50)
@@ -185,19 +188,20 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
 
             # Evento de clique
             if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
 
-                # Botão Voltar
-                if botao_voltar.collidepoint(event.pos):
-                    return janela_principal(tela, largura, altura, fonte, botoes, cursores)
-
-                # Botão Registrar
-                if botao_registrar.collidepoint(event.pos):
-                    if registrar_usuario():
+                    # Botão Voltar
+                    if botao_voltar.collidepoint(event.pos):
                         return janela_principal(tela, largura, altura, fonte, botoes, cursores)
 
-                # Invocar método - Verificar campo ativo
-                nome_ativo, cpf_ativo, email_ativo, senha_ativo = verificar_campo_ativo_registro(
-                    event.pos, nome_input, cpf_input, email_input, senha_input)
+                    # Botão Registrar
+                    if botao_registrar.collidepoint(event.pos):
+                        if registrar_usuario():
+                            return janela_principal(tela, largura, altura, fonte, botoes, cursores)
+
+                    # Invocar método - Verificar campo ativo
+                    nome_ativo, cpf_ativo, email_ativo, senha_ativo = verificar_campo_ativo_registro(
+                        event.pos, nome_input, cpf_input, email_input, senha_input)
 
             # Evento de tecla
             if event.type == pygame.KEYDOWN:
@@ -251,6 +255,7 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
 
         # Setar tela de fundo
         tela.blit(fundo, (0, 0))
+        tela.blit(criar, (50, 100))
 
         # Método - Título campo
         desenhar_rotulo_campo(tela, fonte, nome_input, "Nome")

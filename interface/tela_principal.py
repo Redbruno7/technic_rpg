@@ -9,10 +9,13 @@ from funcoes_padrao.mtd_form import desenhar_botao
 pygame.init()
 os.system('cls')
 
+icone = pygame.image.load("imgs\icone.png")
+pygame.display.set_icon(icone)
+
 # Definir e atribuir dimensões da tela
-largura = 1600
-altura = 800
-tela = pygame.display.set_mode((largura, altura))
+largura = 1920
+altura = 1080
+tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
 # Nomear tela
 pygame.display.set_caption("Guedgers")
@@ -84,21 +87,22 @@ def janela_principal(tela, largura, altura, fonte, botoes, cursores):
 
             # Evento de clique
             if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
 
-                # Botão Entrar
-                if botao_entrar.collidepoint(event.pos):
-                    return tela_entrar.tela_entrar(
-                        tela, largura, altura, fonte, botoes, cursores)
+                    # Botão Entrar
+                    if botao_entrar.collidepoint(event.pos):
+                        return tela_entrar.tela_entrar(
+                            tela, largura, altura, fonte, botoes, cursores)
 
-                # Botão Registrar
-                if botao_registrar.collidepoint(event.pos):
-                    return tela_registrar.tela_registrar(
-                        tela, largura, altura, fonte, botoes, cursores)
+                    # Botão Registrar
+                    if botao_registrar.collidepoint(event.pos):
+                        return tela_registrar.tela_registrar(
+                            tela, largura, altura, fonte, botoes, cursores)
 
-                # Botão Sair
-                if botao_sair.collidepoint(event.pos):
-                    pygame.quit()
-                    sys.exit()
+                    # Botão Sair
+                    if botao_sair.collidepoint(event.pos):
+                        pygame.quit()
+                        sys.exit()
 
         # Invocar método - Desenhar botão
         desenhar_botao(tela, botao_entrar, "Entrar", fonte, cores.AMARELO_OURO_VELHO)
