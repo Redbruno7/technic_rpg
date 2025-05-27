@@ -39,9 +39,21 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
     novo_email = pygame.Rect(600, 380, 400, 50)
     novo_senha = pygame.Rect(600, 500, 400, 50)
 
-    # Definir valores textos, cursores e atividades
-    texto_nome, texto_cpf, texto_email, texto_senha = f'', f'', f'', f''
-    cursor_nome, cursor_cpf, cursor_email, cursor_senha = 0, 0, 0, 0
+
+    # aqui deixa os campos da edicao pré-preenchidos
+    cursor.execute('SELECT nome_usuario, cpf_usuario, email_usuario, senha_usuario FROM Usuario WHERE email_usuario = ?', (email_original,))
+    resultado = cursor.fetchone()
+
+    if resultado:
+        texto_nome, texto_cpf, texto_email, texto_senha = resultado
+    else:
+        texto_nome, texto_cpf, texto_email, texto_senha = '', '', '', ''
+
+    cursor_nome = len(texto_nome)
+    cursor_cpf = len(texto_cpf)
+    cursor_email = len(texto_email)
+    cursor_senha = len(texto_senha)
+
     nome_ativo, cpf_ativo, email_ativo, senha_ativo = False, False, False, False
     mensagem_erro = ''
 
@@ -254,6 +266,7 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
 
         # Setar tela de fundo
         tela.blit(fundo, (0, 0))
+        
 
         # Método - Título campo
         desenhar_rotulo_campo(tela, fonte, novo_nome, "Nome")
