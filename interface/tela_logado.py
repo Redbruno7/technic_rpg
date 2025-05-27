@@ -22,7 +22,7 @@ conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
 cursor = conn.cursor()
 
 
-def tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email):
+def tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original):
 
     # Carregar imagem de fundo
     fundo = pygame.image.load("imgs/fundo_logado.png")
@@ -39,14 +39,14 @@ def tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email):
     botao_editar = pygame.Rect(100, 550, 100, 50)
     padrao_cursor, mao_cursor = cursores
 
-    def exibir_usuario(texto_email):
+    def exibir_usuario():
         cursor.execute(
             '''
             SELECT nome_usuario, cpf_usuario, email_usuario, senha_usuario
             FROM Usuario
             WHERE email_usuario = ?
             ''',
-            (texto_email,)
+            (email_original,)
         )
         usuario = cursor.fetchone()
 
@@ -95,9 +95,9 @@ def tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email):
 
                 if botao_editar.collidepoint(event.pos):
                     return tela_editar(
-                        tela, largura, altura, fonte, botoes, cursores)
+                        tela, largura, altura, fonte, botoes, cursores, email_original)
 
         desenhar_botao(tela, botao_sair, "Sair", fonte, cores.SANGUE_SECO)
         desenhar_botao(tela, botao_editar, "Editar", fonte, cores.AMARELO_OURO_VELHO)
-        exibir_usuario(texto_email)
+        exibir_usuario()
         pygame.display.update()

@@ -24,7 +24,7 @@ altura = 800
 tela = pygame.display.set_mode((largura, altura))
 
 
-def tela_editar(tela, largura, altura, fonte, botoes, cursores, ):
+def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
     from interface.tela_logado import tela_logar
 
     # Carregar imagem de fundo
@@ -85,9 +85,9 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, ):
                 UPDATE Usuario
                 SET nome_usuario = ?, cpf_usuario = ?, email_usuario = ?, senha_usuario = ?
                 WHERE email_usuario = ?
-                ''', (texto_nome, cpf_formatado, texto_email, texto_senha, texto_email[texto_email]))
+            ''', (texto_nome, cpf_formatado, texto_email, texto_senha, email_original))
 
-            novo_usuario_info = cursor.fetchone()
+            usuario = cursor.fetchone()
             conn.commit()
             return True
 
@@ -191,7 +191,7 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, ):
 
                 # Botão Voltar
                 if botao_voltar.collidepoint(event.pos):                              
-                    return tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email)
+                    return tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original)
 
                 # Botão Registrar
                 if botao_alterar.collidepoint(event.pos):
