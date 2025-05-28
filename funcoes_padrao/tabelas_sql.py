@@ -1,7 +1,7 @@
 import sqlite3
 
 
-conn = sqlite3.connect(r'C:\guilherme\technic_rpg\Guedgers.db')
+conn = sqlite3.connect(r'bd\Guedgers.db')
 cursor = conn.cursor()
 
 cursor.execute(
