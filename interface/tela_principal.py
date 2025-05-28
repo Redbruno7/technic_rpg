@@ -9,34 +9,34 @@ from funcoes_padrao.mtd_form import desenhar_botao
 pygame.init()
 os.system('cls')
 
-icone = pygame.image.load("imgs\icone.png")
-pygame.display.set_icon(icone)
-
 # Dimensões de tela fullscreen baseada no monitor do usuário
 info = pygame.display.Info()
 largura, altura = info.current_w, info.current_h
 tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
-
-# Definir imagem de de fundo
+# Imagem de fundo
 fundo = pygame.image.load("imgs/guedgers_principal.png")
 fundo = pygame.transform.scale(fundo, (largura, altura))
 
-# Nomear tela
+# Imagem - Ícone padrão
+icone = pygame.image.load("imgs/icone.png")
+pygame.display.set_icon(icone)
+
+# Nome da janela padrão
 pygame.display.set_caption("Guedgers")
 
-# Definir fonte
+# Fonte padrão
 fonte = pygame.font.SysFont('Unicode', 40)
 
-# Dimensionar botões
-botao_entrar = pygame.Rect(620, 420, 370, 50)
-botao_registrar = pygame.Rect(620, 520, 370, 50)
-botao_sair = pygame.Rect(735, 620, 130, 50)
+# Posição dos campos e botões
+botao_entrar = pygame.Rect(620, 500, 370, 50)
+botao_registrar = pygame.Rect(620, 600, 370, 50)
+botao_sair = pygame.Rect(735, 750, 130, 50)
 
-# Unificar botões
+# Tupla - Botões
 botoes = (botao_entrar, botao_registrar, botao_sair)
 
-# Definir visuais para cursor
+# Visuais cursor
 padrao_cursor = pygame.SYSTEM_CURSOR_ARROW
 mao_cursor = pygame.SYSTEM_CURSOR_HAND
 
@@ -46,19 +46,18 @@ cursores = (padrao_cursor, mao_cursor)
 
 def janela_principal(tela, largura, altura, fonte, botoes, cursores):
     """
-    Controlar a tela principal do programa, exibir botões para entrar, registrar e sair, além de gerenciar eventos do mouse e troca de telas
+    Exibe a tela principal com os botões Entrar, Registrar e Sair.
 
     Args:
-        tela (pygame.Surface): Surface do pygame onde tudo é desenhado
-        largura (int): Largura da janela
-        altura (int): Altura da janela
-        fonte (pygame.font.Font): Fonte usada para os textos nos botões
-        botoes (tuple): Tupla com 3 pygame.Rect, representando os botões Entrar, Registrar e Sair
-        cursores (tuple): Tupla com dois cursores pygame, cursor padrão e cursor "mão"
-        fundo (pygame.Surface): Imagem usada como fundo da janela
+        tela (pygame.Surface): Superfície da janela.
+        largura (int): Largura da tela.
+        altura (int): Altura da tela.
+        fonte (pygame.font.Font): Fonte usada nos botões.
+        botoes (tuple): Tupla com os retângulos dos botões.
+        cursores (tuple): Tupla com os tipos de cursores.
 
     Returns:
-        None ou pygame.Surface: Retorna a surface da tela de login ou registro ao clicar nos botões correspondentes, ou finaliza o programa ao clicar em sair
+        tela_entrar/tela_registrar: Redireciona para outra tela conforme botão clicado.
     """
     # Separar botões
     botao_entrar, botao_registrar, botao_sair = botoes
@@ -79,14 +78,10 @@ def janela_principal(tela, largura, altura, fonte, botoes, cursores):
         else:
             pygame.mouse.set_cursor(padrao_cursor)
 
-        # Definir eventos de interação
+        # Eventos
         for event in pygame.event.get():
 
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
-
-            # Evento de clique
+            # MOUSE BTN-1
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
 

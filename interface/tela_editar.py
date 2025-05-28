@@ -1,6 +1,5 @@
 import os
 import pygame
-import sys
 import sqlite3
 from funcoes_padrao import cores
 from funcoes_padrao.mtd_form import atualizar_cursor
@@ -25,18 +24,32 @@ tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
 
 def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
+    """
+    Exibe a tela para o usuário alterar suas informações cadastradas.
+
+    Args:
+        tela (pygame.Surface): Superfície onde a interface será desenhada.
+        largura (int): Largura da janela do jogo/tela.
+        altura (int): Altura da janela do jogo/tela.
+        fonte (pygame.font.Font): Objeto fonte para desenhar textos.
+        botoes (dict/list): Dados/configuração dos botões (não usado diretamente aqui).
+        cursores (tuple): Cursores disponíveis (padrão, mão).
+        email_original (str): Email do usuário logado para buscar dados no banco.
+
+    Returns:
+        tela_logar (função): Retorna a função da tela de login com dados atualizados após editar ou voltar.
+    """
     from interface.tela_logado import tela_logar
 
-    # Carregar imagem de fundo
+    # Imagem de fundo
     fundo = pygame.image.load("imgs/fundo_geral.png")
     fundo = pygame.transform.scale(fundo, (largura, altura))
 
-
+    # Imagem - ALTERAR INFORMAÇÕES
     alterar = pygame.image.load("imgs/alterar.png")
     alterar = pygame.transform.scale(alterar, (500, 500))
 
-
-    # Definir posição dos campos e botões
+    # Posição dos campos e botões
     botao_voltar = pygame.Rect(620, 600, 130, 50)
     botao_alterar = pygame.Rect(850, 600, 130, 50)
     novo_nome = pygame.Rect(600, 150, 400, 50)
@@ -44,26 +57,23 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
     novo_email = pygame.Rect(600, 380, 400, 50)
     novo_senha = pygame.Rect(600, 500, 400, 50)
 
-
-
-    # aqui deixa os campos da edicao pré-preenchidos
-    cursor.execute('SELECT nome_usuario, cpf_usuario, email_usuario, senha_usuario FROM Usuario WHERE email_usuario = ?', (email_original,))
+    # Auto-preenchimento dos campos
+    cursor.execute(
+        'SELECT nome_usuario, cpf_usuario, email_usuario, senha_usuario FROM Usuario WHERE email_usuario = ?', (email_original,))
     resultado = cursor.fetchone()
 
     if resultado:
         texto_nome, texto_cpf, texto_email, texto_senha = resultado
-    else:
-        texto_nome, texto_cpf, texto_email, texto_senha = '', '', '', ''
 
+    # Valores iniciais de posicionamento do cursor, atividade, mensagem de erro
     cursor_nome = len(texto_nome)
     cursor_cpf = len(texto_cpf)
     cursor_email = len(texto_email)
     cursor_senha = len(texto_senha)
-
     nome_ativo, cpf_ativo, email_ativo, senha_ativo = False, False, False, False
     mensagem_erro = ''
 
-    # Definir temporizadores para funções de tecla
+    # Temporizadores para teclas pressionadas
     backspace_timer = 0
     BACKSPACE_DELAY = 100
     delete_timer = 0
@@ -73,24 +83,39 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
     right_timer = 0
     RIGHT_DELAY = 100
 
-    # Definir método de registro de usuário
+    # Método de registro de usuário
     def alterar_usuario():
-        
+        """
+        Valida dados do formulário e atualiza o banco com os novos dados do usuário.
+
+        Verificações:
+        - Campos não podem ficar vazios.
+        - Email precisa conter '@'.
+        - CPF precisa ter 11 dígitos numéricos (limpos).
+
+        Atualiza o banco SQLite com as novas informações caso tudo seja válido.
+
+        Retorna:
+            bool: True se atualização deu certo, False caso contrário (com mensagem de erro).
+        """
 
         # Importar mensagem de erro
         nonlocal mensagem_erro
 
-        # Definir mensagem de erro
+        # Erro - Campos vazios
         if not (texto_nome and texto_cpf and texto_email and texto_senha):
             mensagem_erro = 'Preencha todos os campos!'
             return False
 
         try:
             import re
+
+            # Erro - email
             if '@' not in texto_email:
                 mensagem_erro = 'E-mail inválido! Deve conter @'
                 return False
 
+            # Erro - CPF
             cpf_limpo = re.sub(r'\D', '', texto_cpf)
             if len(cpf_limpo) != 11:
                 mensagem_erro = 'CPF deve ter 11 dígitos numéricos!'
@@ -98,23 +123,27 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
 
             cpf_formatado = f'{cpf_limpo[:3]}.{cpf_limpo[3:6]}.{cpf_limpo[6:9]}-{cpf_limpo[9:]}'
 
-
+            # Atualizar banco de dados
             cursor.execute('''
                 UPDATE Usuario
                 SET nome_usuario = ?, cpf_usuario = ?, email_usuario = ?, senha_usuario = ?
                 WHERE email_usuario = ?
             ''', (texto_nome, cpf_formatado, texto_email, texto_senha, email_original))
 
-            usuario = cursor.fetchone()
             conn.commit()
             return True
 
+        # Quaisquer erros - Testes
         except Exception as e:
             mensagem_erro = f'Erro ao registrar: {str(e)}'
             return False
 
     # Loop Principal
     while True:
+
+        # Posição das imagens
+        tela.blit(fundo, (0, 0))
+        tela.blit(alterar, (50, 100))
 
         # Invocar método - Atualizar cursor
         mouse_pos = pygame.mouse.get_pos()
@@ -198,33 +227,30 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
 
             right_timer = tempo_atual
 
-        # Definir eventos de interação
+        # Eventos
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
 
-            # Evento de clique
+            # MOUSE BTN-1
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
 
                     # Botão Voltar
-                    if botao_voltar.collidepoint(event.pos):                              
+                    if botao_voltar.collidepoint(event.pos):
                         return tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original)
 
                     # Botão Registrar
                     if botao_alterar.collidepoint(event.pos):
-                        if alterar_usuario():                                                 
+                        if alterar_usuario():
                             return tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email)
 
                     # Invocar método - Verificar campo ativo
                     nome_ativo, cpf_ativo, email_ativo, senha_ativo = verificar_campo_ativo_registro(
                         event.pos, novo_nome, novo_cpf, novo_email, novo_senha)
 
-            # Evento de tecla
+            # Teclas
             if event.type == pygame.KEYDOWN:
 
-                # Evento BACKSPACE
+                # BACKSPACE
                 if event.key == pygame.K_BACKSPACE:
                     backspace_timer = pygame.time.get_ticks() - BACKSPACE_DELAY
 
@@ -240,7 +266,7 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
                 if event.key == pygame.K_RIGHT:
                     right_timer = pygame.time.get_ticks() - RIGHT_DELAY
 
-                # Evento TAB
+                # TAB
                 elif event.key == pygame.K_TAB:
                     if nome_ativo:
                         nome_ativo, cpf_ativo = False, True
@@ -262,7 +288,7 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
                     if alterar_usuario():
                         return tela_logar(tela, largura, altura, fonte, botoes, cursores, email_original)
 
-                # Processa digitação, backspace e setas
+                # Invocar método - Processar dígitos de registro
                 else:
                     (texto_nome, texto_cpf, texto_email, texto_senha,
                      cursor_nome, cursor_cpf, cursor_email, cursor_senha) = processar_digito_registro(
@@ -271,18 +297,13 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
                         cursor_nome, cursor_cpf, cursor_email, cursor_senha
                     )
 
-        # Setar tela de fundo
-        tela.blit(fundo, (0, 0))
-        tela.blit(alterar, (50, 100))
-        
-
-        # Método - Título campo
+        # Invocar método - Desenhar rótulo dos campos
         desenhar_rotulo_campo(tela, fonte, novo_nome, "Nome")
         desenhar_rotulo_campo(tela, fonte, novo_cpf, "CPF")
         desenhar_rotulo_campo(tela, fonte, novo_email, "Email")
         desenhar_rotulo_campo(tela, fonte, novo_senha, "Senha")
 
-        # Método - Preencher campo
+        # Invocar método - Preencher campos de texto
         desenhar_campo_texto(tela, fonte, novo_nome,
                              texto_nome, nome_ativo, cursor_index=cursor_nome)
         desenhar_campo_texto(tela, fonte, novo_cpf, texto_cpf,
@@ -292,10 +313,12 @@ def tela_editar(tela, largura, altura, fonte, botoes, cursores, email_original):
         desenhar_campo_texto(tela, fonte, novo_senha, texto_senha,
                              senha_ativo, cursor_index=cursor_senha, ocultar=True)
 
-        # Método - Definir botões
+        # Invocar método - Desenhar botões
         desenhar_botao(tela, botao_voltar, "Voltar", fonte, cores.SANGUE_SECO)
-        desenhar_botao(tela, botao_alterar, "Alterar", fonte, cores.AMARELO_OURO_VELHO)
+        desenhar_botao(tela, botao_alterar, "Alterar",
+                       fonte, cores.AMARELO_OURO_VELHO)
 
+        # Desenhar mensagem de erro
         if mensagem_erro:
             fonte_erro = pygame.font.SysFont('UNICODE', 40)
             texto_erro = fonte_erro.render(

@@ -1,6 +1,5 @@
 import os
 import pygame
-import sys
 import sqlite3
 from funcoes_padrao import cores
 from funcoes_padrao.mtd_form import atualizar_cursor
@@ -25,16 +24,35 @@ tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
 
 def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
+    """
+    Exibe a interface gráfica para registro de novos usuários.
+    Monta uma tela com campos para o usuário preencher nome, 
+    CPF, e-mail e senha, além de botões para registrar ou voltar. 
+    Ela gerencia a interação do usuário com o teclado e mouse, 
+    validando os dados antes de registrar no banco de dados.
+
+    Args:
+        tela (pygame.Surface): Superfície principal do Pygame onde os elementos são desenhados.
+        largura (int): Largura da tela.
+        altura (int): Altura da tela.
+        fonte (pygame.Font): Fonte usada para desenhar textos.
+        botoes (dict): Dicionário com os estados ou referências dos botões da interface.
+        cursores (dict): Dicionário com os cursores dos campos de entrada.
+
+    Returns:
+        None: Retorna à tela principal após registro ou ao clicar em voltar.
+    """
     from interface.tela_principal import janela_principal
 
-    # Carregar imagem de fundo
+    # Imagem de fundo
     fundo = pygame.image.load("imgs/fundo_geral.png")
     fundo = pygame.transform.scale(fundo, (largura, altura))
 
+    # Imagem - CRIAR CONTA
     criar = pygame.image.load("imgs/criar.png")
     criar = pygame.transform.scale(criar, (500, 500))
 
-    # Definir posição dos campos e botões
+    # Posição dos campos e botões
     botao_voltar = pygame.Rect(620, 600, 130, 50)
     botao_registrar = pygame.Rect(850, 600, 130, 50)
     nome_input = pygame.Rect(600, 150, 400, 50)
@@ -42,13 +60,13 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
     email_input = pygame.Rect(600, 380, 400, 50)
     senha_input = pygame.Rect(600, 500, 400, 50)
 
-    # Definir valores textos, cursores e atividades
+    # Valores iniciais de textos, posicionamento do cursor, atividade, mensagem de erro
     texto_nome, texto_cpf, texto_email, texto_senha = '', '', '', ''
     cursor_nome, cursor_cpf, cursor_email, cursor_senha = 0, 0, 0, 0
     nome_ativo, cpf_ativo, email_ativo, senha_ativo = False, False, False, False
     mensagem_erro = ''
 
-    # Definir temporizadores para funções de tecla
+    # Temporizadores para teclas pressionadas
     backspace_timer = 0
     BACKSPACE_DELAY = 100
     delete_timer = 0
@@ -58,23 +76,35 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
     right_timer = 0
     RIGHT_DELAY = 100
 
-    # Definir método de registro de usuário
+    # Método de registro de usuário
     def registrar_usuario():
+        """
+        Valida os dados inseridos pelo usuário e insere um novo registro no banco de dados.
+        Verifica se todos os campos estão preenchidos, 
+        se o CPF tem 11 dígitos e se o e-mail contém '@'. 
+        Em caso de sucesso, insere os dados na tabela Usuario.
+
+        Returns:
+            bool: True se o registro for bem-sucedido, False se houver erros.
+        """
 
         # Importar mensagem de erro
         nonlocal mensagem_erro
 
-        # Definir mensagem de erro
+        # Erro - Campos vazios
         if not (texto_nome and texto_cpf and texto_email and texto_senha):
             mensagem_erro = 'Preencha todos os campos!'
             return False
 
         try:
             import re
+
+            # Erro - email
             if '@' not in texto_email:
                 mensagem_erro = 'E-mail inválido! Deve conter @'
                 return False
 
+            # Erro - CPF
             cpf_limpo = re.sub(r'\D', '', texto_cpf)
             if len(cpf_limpo) != 11:
                 mensagem_erro = 'CPF deve ter 11 dígitos numéricos!'
@@ -82,21 +112,28 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
 
             cpf_formatado = f'{cpf_limpo[:3]}.{cpf_limpo[3:6]}.{cpf_limpo[6:9]}-{cpf_limpo[9:]}'
 
+            # Atualizar banco de dados
             cursor.execute(
                 '''
                 INSERT INTO Usuario (nome_usuario, cpf_usuario, email_usuario, senha_usuario)
                 VALUES (?, ?, ?, ?)
                 ''', (texto_nome, cpf_formatado, texto_email, texto_senha)
             )
+        
             conn.commit()
             return True
 
+        # Quaisquer erros - Testes
         except Exception as e:
             mensagem_erro = f'Erro ao registrar: {str(e)}'
             return False
 
     # Loop Principal
     while True:
+
+        # Posição das imagens
+        tela.blit(fundo, (0, 0))
+        tela.blit(criar, (50, 100))
 
         # Invocar método - Atualizar cursor
         mouse_pos = pygame.mouse.get_pos()
@@ -180,13 +217,10 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
 
             right_timer = tempo_atual
 
-        # Definir eventos de interação
+        # Eventos
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
 
-            # Evento de clique
+            # MOUSE BTN-1
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
 
@@ -203,10 +237,10 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
                     nome_ativo, cpf_ativo, email_ativo, senha_ativo = verificar_campo_ativo_registro(
                         event.pos, nome_input, cpf_input, email_input, senha_input)
 
-            # Evento de tecla
+            # Teclas
             if event.type == pygame.KEYDOWN:
 
-                # Evento BACKSPACE
+                # BACKSPACE
                 if event.key == pygame.K_BACKSPACE:
                     backspace_timer = pygame.time.get_ticks() - BACKSPACE_DELAY
 
@@ -222,7 +256,7 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
                 if event.key == pygame.K_RIGHT:
                     right_timer = pygame.time.get_ticks() - RIGHT_DELAY
 
-                # Evento TAB
+                # TAB
                 elif event.key == pygame.K_TAB:
                     if nome_ativo:
                         nome_ativo, cpf_ativo = False, True
@@ -244,7 +278,7 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
                     if registrar_usuario():
                         return janela_principal(tela, largura, altura, fonte, botoes, cursores)
 
-                # Processa digitação, backspace e setas
+                # Invocar método - Processar dígitos de registro
                 else:
                     (texto_nome, texto_cpf, texto_email, texto_senha,
                      cursor_nome, cursor_cpf, cursor_email, cursor_senha) = processar_digito_registro(
@@ -253,17 +287,13 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
                         cursor_nome, cursor_cpf, cursor_email, cursor_senha
                     )
 
-        # Setar tela de fundo
-        tela.blit(fundo, (0, 0))
-        tela.blit(criar, (50, 100))
-
-        # Método - Título campo
+        # Invocar método - Desenhar rótulo dos campos
         desenhar_rotulo_campo(tela, fonte, nome_input, "Nome")
         desenhar_rotulo_campo(tela, fonte, cpf_input, "CPF")
         desenhar_rotulo_campo(tela, fonte, email_input, "Email")
         desenhar_rotulo_campo(tela, fonte, senha_input, "Senha")
 
-        # Método - Preencher campo
+        # Invocar método - Preencher campos de texto
         desenhar_campo_texto(tela, fonte, nome_input,
                              texto_nome, nome_ativo, cursor_index=cursor_nome)
         desenhar_campo_texto(tela, fonte, cpf_input, texto_cpf,
@@ -273,10 +303,12 @@ def tela_registrar(tela, largura, altura, fonte, botoes, cursores):
         desenhar_campo_texto(tela, fonte, senha_input, texto_senha,
                              senha_ativo, cursor_index=cursor_senha, ocultar=True)
 
-        # Método - Definir botões
+        # Invocar método - Desenhar botões
         desenhar_botao(tela, botao_voltar, "Voltar", fonte, cores.SANGUE_SECO)
-        desenhar_botao(tela, botao_registrar, "Registrar", fonte, cores.AMARELO_OURO_VELHO)
+        desenhar_botao(tela, botao_registrar, "Registrar",
+                       fonte, cores.AMARELO_OURO_VELHO)
 
+        # Desenhar mensagem de erro
         if mensagem_erro:
             fonte_erro = pygame.font.SysFont('UNICODE', 40)
             texto_erro = fonte_erro.render(

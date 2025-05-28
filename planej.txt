@@ -1,11 +1,5 @@
 O QUE FALTA
 
-+ Tela Logado
-    º Construir tela com base no usuário logado / Com informações do registro
-
-+ Design das telas:
-    º Logado
-
 + Implementações futuras:
     º Máscara de CPF
     º Criptografar senha

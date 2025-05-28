@@ -1,6 +1,5 @@
 import os
 import pygame
-import sys
 import sqlite3
 from funcoes_padrao import cores
 from funcoes_padrao.mtd_form import atualizar_cursor
@@ -16,6 +15,7 @@ os.system('cls')
 
 # Conectar Banco de dados
 conn = sqlite3.connect(r'C:\TECNICO\technic_rpg\Guedgers.db')
+cursor = conn.cursor()
 
 # Dimensões de tela fullscreen baseada no monitor do usuário
 info = pygame.display.Info()
@@ -24,29 +24,45 @@ tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
 
 
 def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
+    """
+    Exibe a tela de login para o usuário, permitindo autenticação via email e senha.
+
+    Args:
+        tela (pygame.Surface): A superfície da janela principal onde os elementos são desenhados.
+        largura (int): A largura da tela em pixels.
+        altura (int): A altura da tela em pixels.
+        fonte (pygame.font.Font): Fonte padrão utilizada para os textos.
+        botoes (list): Lista de retângulos representando botões interativos.
+        cursores (list): Lista de retângulos que representam campos de entrada ativos.
+
+    Returns:
+        tela_logar (function): Redireciona para a tela do usuário logado, se a autenticação for bem-sucedida.
+        janela_principal (function): Retorna à tela principal caso o botão "Voltar" seja clicado.
+    """
     from interface.tela_principal import janela_principal
     from interface.tela_logado import tela_logar
 
-    # Carregar imagem de fundo
+    # Imagem de fundo
     fundo = pygame.image.load("imgs/fundo_geral.png")
     fundo = pygame.transform.scale(fundo, (largura, altura))
 
+    # Imagem - LOGIN
     login = pygame.image.load("imgs/login.png")
     login = pygame.transform.scale(login, (300, 300))
 
-    # Definir posição dos campos e botões
+    # Posição dos campos e botões
     botao_logar = pygame.Rect(850, 550, 100, 50)
     botao_voltar = pygame.Rect(650, 550, 100, 50)
     email_input = pygame.Rect(600, 300, 400, 50)
     senha_input = pygame.Rect(600, 450, 400, 50)
 
-    # Definir valores textos, cursores e atividades
+    # Valores iniciais de textos, posicionamento do cursor, atividade, mensagem de erro
     texto_email, texto_senha = '', ''
     cursor_email, cursor_senha = 0, 0
     email_ativo, senha_ativo = False, False
     mensagem_erro = ''
 
-    # Definir temporizadores para funções de tecla
+    # Temporizadores para teclas pressionadas
     backspace_timer = 0
     BACKSPACE_DELAY = 100
     delete_timer = 0
@@ -56,17 +72,30 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
     right_timer = 0
     RIGHT_DELAY = 100
 
-    # Definir método de autenticação de usuário
+    # Método de autenticação de usuário
     def autenticar_usuario(email, senha):
+        """
+        Verifica se o email e a senha informados correspondem a um usuário existente no banco de dados.
+
+        Args:
+            email (str): Email digitado pelo usuário.
+            senha (str): Senha digitada pelo usuário.
+
+        Returns:
+            bool: True se o usuário for autenticado com sucesso, False caso contrário.
+        """
+
+        # Selecionar registro no banco de dados
         try:
-            cursor = conn.cursor()
             cursor.execute(
                 "SELECT * FROM Usuario WHERE email_usuario=? AND senha_usuario=?",
                 (email, senha)
             )
+
             usuario = cursor.fetchone()
             return usuario is not None
-
+        
+        # Quaisquer erros - Testes
         except sqlite3.Error as e:
             nonlocal mensagem_erro
             mensagem_erro = f"Erro no banco: {str(e)}"
@@ -74,6 +103,10 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
 
     # Loop principal
     while True:
+
+        # Posição das imagens
+        tela.blit(fundo, (0, 0))
+        tela.blit(login, (650, 0))
 
         # Invocar método - Atualizar cursor
         mouse_pos = pygame.mouse.get_pos()
@@ -129,14 +162,11 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
 
             right_timer = tempo_atual
 
-        # Definir eventos de interação
+        # Eventos
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
 
-            # Evento de clique
-            elif event.type == pygame.MOUSEBUTTONDOWN:
+            # MOUSE BTN-1
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
 
                     # Botão Voltar
@@ -148,6 +178,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
                         if autenticar_usuario(texto_email, texto_senha):
                             return tela_logar(tela, largura, altura, fonte, botoes, cursores, texto_email)
 
+                        # Mensagem de erro padrão
                         else:
                             mensagem_erro = "Email e/ou Senha incorretos."
 
@@ -155,7 +186,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
                     email_ativo, senha_ativo = verificar_campo_ativo_login(
                         event.pos, email_input, senha_input)
 
-            # Evento de tecla
+            # Teclas
             if event.type == pygame.KEYDOWN:
 
                 # BACKSPACE
@@ -174,7 +205,7 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
                 if event.key == pygame.K_RIGHT:
                     right_timer = pygame.time.get_ticks() - RIGHT_DELAY
 
-                # Evento TAB
+                # TAB
                 elif event.key == pygame.K_TAB:
                     if email_ativo:
                         email_ativo, senha_ativo = False, True
@@ -192,29 +223,26 @@ def tela_entrar(tela, largura, altura, fonte, botoes, cursores):
                     else:
                         mensagem_erro = "Email e/ou Senha incorretos."
 
-                # Processa digitação, backspace e setas
+                # Invocar método - Processar dígitos de login
                 else:
                     (texto_email, texto_senha, cursor_email, cursor_senha) = processar_digito_login(
                         event, email_ativo, senha_ativo, texto_email, texto_senha, cursor_email, cursor_senha
                     )
 
-        # Setar tela de fundo
-        tela.blit(fundo, (0, 0))
-        tela.blit(login, (650, 0))
-
-        # Método - Desenhar título
+        # Invocar método - Desenhar rótulo dos campos
         desenhar_rotulo_campo(tela, fonte, email_input, "Email")
         desenhar_rotulo_campo(tela, fonte, senha_input, "Senha")
 
-        # Método - Preencher campo
+        # Invocar método - Preencher campos de texto
         desenhar_campo_texto(tela, fonte, email_input,
                              texto_email, email_ativo, cursor_index=cursor_email)
         desenhar_campo_texto(tela, fonte, senha_input, texto_senha,
                              senha_ativo, cursor_index=cursor_senha, ocultar=True)
 
-        # Método - Desenhar botões
+        # Invocar método - Desenhar botões
         desenhar_botao(tela, botao_voltar, "Voltar", fonte, cores.SANGUE_SECO)
-        desenhar_botao(tela, botao_logar, "Entrar", fonte, cores.AMARELO_OURO_VELHO)
+        desenhar_botao(tela, botao_logar, "Entrar",
+                       fonte, cores.AMARELO_OURO_VELHO)
 
         # Desenhar mensagem de erro
         if mensagem_erro:
