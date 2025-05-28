@@ -10,9 +10,9 @@ pygame.init()
 os.system('cls')
 
 # Dimensões de tela fullscreen baseada no monitor do usuário
-info = pygame.display.Info()
-largura, altura = info.current_w, info.current_h
-tela = pygame.display.set_mode((largura, altura), pygame.FULLSCREEN)
+largura, altura = 1600, 800
+tela = pygame.display.set_mode((largura, altura))
+
 
 # Imagem de fundo
 fundo = pygame.image.load("imgs/guedgers_principal.png")
@@ -29,9 +29,9 @@ pygame.display.set_caption("Guedgers")
 fonte = pygame.font.SysFont('Unicode', 40)
 
 # Posição dos campos e botões
-botao_entrar = pygame.Rect(620, 500, 370, 50)
-botao_registrar = pygame.Rect(620, 600, 370, 50)
-botao_sair = pygame.Rect(735, 750, 130, 50)
+botao_entrar = pygame.Rect(620, 400, 370, 50)
+botao_registrar = pygame.Rect(620, 500, 370, 50)
+botao_sair = pygame.Rect(735, 600, 130, 50)
 
 # Tupla - Botões
 botoes = (botao_entrar, botao_registrar, botao_sair)
